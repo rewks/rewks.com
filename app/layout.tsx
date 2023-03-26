@@ -1,4 +1,10 @@
 import './globals.css'
+import styles from './header.module.css'
+import { Inter } from 'next/font/google'
+import Link from 'next/link'
+import Image from 'next/image'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'rewks',
@@ -29,7 +35,35 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <div className="page_container">
+          <div className="header_container">
+            <header>
+                  <Link href="/">
+              <div className="header_item1">
+                <div className="header_logo">
+                    <Image
+                      src="/rewks.svg"
+                      alt="Rewks Logo"
+                      className={styles.rewksLogo}
+                      width={55}
+                      height={45}
+                      priority
+                    />
+                </div>
+                <div className={[inter.className, "header_title"].join(" ")}>
+                  rewks
+                </div>
+              </div>
+                  </Link>
+              <div className="header_item2">
+                <nav>
+
+                </nav>
+              </div>
+            </header>
+          </div>
+          {children}
+        </div>
       </body>
     </html>
   )
