@@ -51,6 +51,7 @@ a {
 
 header {
   display: flex;
+  justify-content: space-between;
   min-width: var(--page-max-width);
 }
 
@@ -63,4 +64,27 @@ header {
 .header_title {
   font-size: 2rem;
   font-weight: 600;
+}
+
+.header_item2 {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.header_item2 nav {
+
+}
+
+.header_item2 nav a {
+  padding: 1rem;
+  text-decoration: inherit;
+  font-weight: 500;
+}
+
+.header_item2 button {
+  width: 2rem;
+  height: 2rem;
+  background-color: transparent;
+  border: none;
 }
