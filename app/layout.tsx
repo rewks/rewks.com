@@ -1,8 +1,8 @@
 import './globals.css'
-import styles from './header.module.css'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
-import Image from 'next/image'
+import Logo from './logo'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -41,14 +41,7 @@ export default function RootLayout({
                   <Link href="/">
               <div className="header_item1">
                 <div className="header_logo">
-                    <Image
-                      src="/rewks.svg"
-                      alt="Rewks Logo"
-                      className={styles.rewksLogo}
-                      width={55}
-                      height={45}
-                      priority
-                    />
+                    <Logo width="55" height="45" />
                 </div>
                 <div className={[inter.className, "header_title"].join(" ")}>
                   rewks
