@@ -1,5 +1,9 @@
 import styles from './page.module.css'
+import { DM_Mono } from 'next/font/google'
 import Image from 'next/image'
+import FPBlogCard from './fpBlogCard'
+
+const dm_mono = DM_Mono({ weight: ['400'], subsets: ['latin']})
 
 export default function Home() {
     return (
@@ -15,21 +19,18 @@ export default function Home() {
                         className={styles.avatar}
                     />
                 </div>
+                <div className={styles.title_container}>
+                    Cyber Security Professional
+                </div>
                 <div className={styles.blurb_container}>
-                    about me blah blah
+                    I hack things to protect them but I also sometimes build things either to help my work or just as a hobby (such as this website). I have a tendency to flit from one interesting tech subject to the next, and sometimes I'll even write about it.
                 </div>
-                <div className={styles.console_container}>
-                    admin@rewks.com:~$ cd ~
+                <div className={[styles.console_container, dm_mono.className].join(" ")}>
+                    <span className={styles.console_user}>admin@rewks.com</span>:<span className={styles.console_path}>~</span>$ echo "Hello, world!"
                 </div>
-                <div className={styles.blog_card}>
-                    most recent post
-                </div>
-                <div className={styles.blog_card}>
-                    second most recent post
-                </div>
-                <div className={styles.blog_card}>
-                    third most recent post
-                </div>
+                <FPBlogCard index={0} />
+                <FPBlogCard index={1} />
+                <FPBlogCard index={2} />
             </div>
         </main>
     )
