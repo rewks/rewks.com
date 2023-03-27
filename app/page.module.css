@@ -1,15 +1,25 @@
 .main_container {
     max-width: var(--page-max-width);
-    margin: auto;
+    margin: 10vh auto;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    
+    overflow: auto;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 2rem;
+    row-gap: 1rem;
+    text-align: center;
 }
 
-.profile_picture,
-.blurb_text {
-    grid-column-start: 1;
-    grid-column-end: 4;
-    text-align: center;
+.main_container > * {
+    border: 1px solid black;
+}
+
+.avatar_container,
+.blurb_container,
+.console_container {
+    grid-column: 1 / 4;
+}
+
+.avatar {
+    border-radius: 360px;
 }
