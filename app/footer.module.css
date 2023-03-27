@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: var(--footer-height);
+    margin-top: 15px;
 }
 
 .footer_container footer {

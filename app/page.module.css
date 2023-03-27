@@ -2,7 +2,7 @@
     max-width: var(--page-max-width);
     margin: 8vh auto 0 auto;
     display: grid;
-    overflow: auto;
+    overflow: visible;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 1280/5, repeat(4, 1fr);
     column-gap: 2rem;
@@ -31,7 +31,7 @@
 }
 
 .console_container {
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
 }
 
 .console_user {
@@ -40,8 +40,4 @@
 
 .console_path {
     color: var(--console-path);
-}
-
-.blog_card {
-    margin-top: 5vh;
 }
