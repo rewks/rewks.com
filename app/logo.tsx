@@ -23,10 +23,10 @@ export default function Logo({ width, height
         <svg width={width} height={height} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="grad1" x1="1" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#00b6ec" />
-                    <stop offset="40%" stop-color="#a5d4d4" />
-                    <stop offset="60%" stop-color="#ffb853" />
-                    <stop offset="100%" stop-color="#e27a00" />
+                    <stop offset="0%" stopColor="#00b6ec" />
+                    <stop offset="40%" stopColor="#a5d4d4" />
+                    <stop offset="60%" stopColor="#ffb853" />
+                    <stop offset="100%" stopColor="#e27a00" />
                 </linearGradient>
             </defs>
             <g id="logo">
