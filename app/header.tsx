@@ -14,7 +14,7 @@ export default function Header() {
                     <Link href="/">
                         <div className={styles.header_brand}>
                             <div className={styles.header_logo}>
-                                <Logo width="55" height="45" />
+                                <Logo width="45" height="45" />
                             </div>
                             <div className={[inter.className, styles.header_title].join(" ")}>
                                 rewks
