@@ -3,8 +3,8 @@
     justify-content: center;
     align-items: center;
     min-height: var(--header-height);
-    box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, .5);
-    background-color: var(--header-background); 
+    box-shadow: inset 0 -1px 0 0 var(--border);
+    background-color: var(--alt-background); 
 }
 
 .header_container a {

@@ -2,7 +2,7 @@
 
 import { ThemeProvider } from 'next-themes'
 
-export function Providers({
+export default function Providers({
      children 
 }:{
     children: React.ReactNode

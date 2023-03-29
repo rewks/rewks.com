@@ -4,7 +4,7 @@ import Image from 'next/image'
 import FPBlogCard from './fpBlogCard'
 import TypeWriter from './typewriter'
 
-const dm_mono = DM_Mono({ weight: ['400'], subsets: ['latin']})
+const dm_mono = DM_Mono({ weight: ['400', '500'], subsets: ['latin']})
 
 export default function Home() {
     return (

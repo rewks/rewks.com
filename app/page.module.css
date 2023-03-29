@@ -38,10 +38,12 @@
 
 .console_user {
     color: var(--console-user);
+    font-weight: 500;
 }
 
 .console_path {
     color: var(--console-path);
+    font-weight: 500;
 }
 
 .console_cmd {

@@ -1,12 +1,12 @@
 :root {
   --background: #263238;
+  --alt-background: #222222;
   --primary: #ffffff;
   --secondary: #cfd8dc;
   --tertiary: #b0bec5;
   --interactive: #e27a00;
   --error: #bf0000;
-
-  --header-background: #222222;
+  --border: rgba(0, 0, 0, .5);
 
   --console-user: #00ff00;
   --console-path: #20bbff;
@@ -29,14 +29,17 @@
 }
 
 [data-theme="light"] {
-  --background: #ff00ff;
-  --primary: #ffffff;
-  --secondary: #cfd8dc;
-  --tertiary: #b0bec5;
+  --background: #f2f2f2;
+  --alt-background: #e4e5f1;
+  --primary: #222222;
+  --secondary: #484b6a;
+  --tertiary: #9394a5;
   --interactive: #e27a00;
   --error: #bf0000;
+  --border: rgba(136, 136, 136, 0.5);
 
-  --header-background: #222222;
+  --console-user: #b90000;
+  --console-path: #004b91;
 }
 
 *,

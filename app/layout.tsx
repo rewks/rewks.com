@@ -1,5 +1,5 @@
 import './globals.css'
-import { Providers } from './providers'
+import Providers from './providers'
 import Header from './header'
 import Footer from './footer'
 import { Roboto } from 'next/font/google'
@@ -33,7 +33,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body className={roboto.className}>
                 <Providers>
                     <Header />
