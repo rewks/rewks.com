@@ -1,5 +1,4 @@
 .main_container {
-    max-width: var(--page-max-width);
     margin: 8vh auto 0 auto;
     display: grid;
     overflow: visible;

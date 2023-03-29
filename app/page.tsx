@@ -1,15 +1,12 @@
 import styles from './page.module.css'
 import { DM_Mono } from 'next/font/google'
 import Image from 'next/image'
-import FPBlogCard from './fpBlogCard'
-import TypeWriter from './typewriter'
 
 const dm_mono = DM_Mono({ weight: ['400', '500'], subsets: ['latin']})
 
 export default function Home() {
     return (
-        <main>
-            <div className={styles.main_container}>
+        <main className={styles.main_container}>
                 <div className={styles.avatar_container}>
                     <Image
                         src="/../public/root/synth-avatar.png"
@@ -30,8 +27,6 @@ export default function Home() {
                 <div className={[styles.console_container, dm_mono.className].join(" ")}>
                     <span className={styles.console_user}>admin@rewks.com</span>:<span className={styles.console_path}>~</span>$&nbsp;<span className={styles.console_cmd}>echo 'Hello, World!'</span>
                 </div>
-               
-            </div>
         </main>
     )
 }
