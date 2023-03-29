@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import NavLinks from './navlinks'
 import Logo from './logo'
 import ThemeSwitch from './themePicker'
 import styles from './header.module.css'
@@ -24,10 +25,7 @@ export default function Header() {
                 </div>
                 <div className={styles.header_item2}>
                     <nav>
-                        <Link href="/">Home</Link>
-                        <Link href="/blog">Blog</Link>
-                        <Link href="/projects">Projects</Link>
-                        <Link href="/about">About</Link>
+                        <NavLinks />
                     </nav>
                 </div>
                 <div className={styles.header_item3}>

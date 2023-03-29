@@ -37,7 +37,6 @@
   --interactive: #e27a00;
   --error: #bf0000;
   --border: rgba(136, 136, 136, 0.5);
-  --mobile-nav: rgba(213, 215, 227, 0.9);
 
   --console-user: #b90000;
   --console-path: #004b91;
@@ -74,4 +73,10 @@ a {
   flex-grow: 1;
   align-self: center;
   max-width: var(--page-max-width);
+}
+
+@media only screen and (max-width: 600px) {
+  .content_container {
+    margin: 0 0.5rem;
+  }
 }
