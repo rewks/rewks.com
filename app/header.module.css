@@ -45,13 +45,13 @@
     font-weight: 700;
 }
 
-.header_item2 nav a {
+.header_item2 a {
     padding: 0 0.5rem;
     font-size: 1.2rem;
     font-weight: 500;
 }
 
-.header_item2 nav a:hover {
+.header_item2 a:hover {
     color: var(--interactive);
 }
 
@@ -68,7 +68,7 @@
         padding: 10px;
     }
 
-    .header_item2 nav a {
+    .desktop_links a {
         display: none;
     }
 
