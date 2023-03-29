@@ -12,6 +12,7 @@ export const metadata = {
     category: 'technology',
     keywords: ['cybersecurity', 'hacking', 'blog'],
     themeColor: 'pink',
+    viewport: 'width=device-width, initial-scale=1.0',
     robots: {
         index: false,
         follow: true,

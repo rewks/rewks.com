@@ -14,7 +14,7 @@
 .header_container header {
     display: flex;
     justify-content: space-between;
-    min-width: var(--page-max-width);
+    width: min(100%, var(--page-max-width));
 }
 
 .header_item1 {
@@ -53,4 +53,13 @@
     margin-left: 1.25rem;
     margin-right: 0.25rem;
     cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+    .header_container {
+        padding: 0 15px;
+    }
+    .header_title {
+        visibility: hidden;
+    }
 }
