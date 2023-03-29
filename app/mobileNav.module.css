@@ -34,7 +34,7 @@
     display: block;
 }
 
-@media only screen and (max-width: 680px) {
+@media only screen and (max-width: 600px) {
     .mobile_nav {
         display: flex;
     }
