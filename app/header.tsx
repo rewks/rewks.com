@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Logo from './logo'
-import ThemePicker from './themePicker'
+import ThemeSwitch from './themePicker'
 import styles from './header.module.css'
 import { Inter } from 'next/font/google'
 
@@ -27,9 +27,7 @@ export default function Header() {
                         <Link href="#">Projects</Link>
                         <Link href="#">About</Link>
                     </nav>
-                    <button type="button">
-                        <ThemePicker />
-                    </button>
+                    <ThemeSwitch />
                 </div>
             </header>
         </div>

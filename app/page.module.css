@@ -18,7 +18,8 @@
 }
 
 .avatar {
-    border-radius: 360px;
+    border-radius: 50%;
+    opacity: 0.85;
 }
 
 .title_container {
@@ -31,7 +32,8 @@
 }
 
 .console_container {
-    margin-bottom: 3rem;
+    margin: 1rem 0 3rem 0;
+    position: static;
 }
 
 .console_user {
@@ -40,4 +42,15 @@
 
 .console_path {
     color: var(--console-path);
+}
+
+.console_cmd {
+    border-right: 0.3rem solid var(--secondary);
+    animation: 
+        blink-caret 1s step-end infinite normal;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--secondary); }
 }

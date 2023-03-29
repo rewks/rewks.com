@@ -1,4 +1,5 @@
 import './globals.css'
+import { Providers } from './providers'
 import Header from './header'
 import Footer from './footer'
 import { Roboto } from 'next/font/google'
@@ -34,11 +35,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={roboto.className}>
-                <Header />
-                <div className="content_container">
-                    {children}
-                </div>
-                <Footer />
+                <Providers>
+                    <Header />
+                    <div className="content_container">
+                        {children}
+                    </div>
+                    <Footer />
+                </Providers>
             </body>
         </html>
     )
