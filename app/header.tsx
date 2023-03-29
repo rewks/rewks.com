@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import NavLinks from './navlinks'
+import MobileNav from './mobileNav'
 import Logo from './logo'
-import ThemeSwitch from './themePicker'
+import ThemeSwitch from './themeSwitch'
 import styles from './header.module.css'
 import { Inter } from 'next/font/google'
 
@@ -26,6 +27,7 @@ export default function Header() {
                 <div className={styles.header_item2}>
                     <nav>
                         <NavLinks />
+                        <MobileNav />
                     </nav>
                 </div>
                 <div className={styles.header_item3}>
