@@ -6,10 +6,11 @@ export default function About() {
         <h1 className={styles.about_slogan}>Hack the planet!</h1>
         <div className={styles.about_container}>
             <Image
-                src="/../public/root/woman-asian-temples.png"
+                src="/../public/root/dark-room-pc.png"
                 alt="placeholder"
-                width={256}
-                height={256}
+                width={1024/4}
+                height={1280/4}
+                quality={100}
                 priority
                 className={styles.about_image}
             />
