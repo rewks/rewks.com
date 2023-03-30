@@ -22,10 +22,10 @@ export default function Home() {
                 Cyber Security Professional
             </div>
             <div className={styles.blurb_container}>
-                I hack things to protect them but I also sometimes build things either to help my work or just as a hobby (such as this website). I have a tendency to flit from one interesting tech subject to the next, and sometimes I'll even write about it.
+                I hack things to protect them but I also sometimes build things either to help my work or just as a hobby (such as this website). I have a tendency to flit from one interesting tech subject to the next, and sometimes I&apos;ll even write about it.
             </div>
             <div className={[styles.console_container, dm_mono.className].join(" ")}>
-                <span className={styles.console_user}>admin@rewks.com</span>:<span className={styles.console_path}>~</span>$&nbsp;<span className={styles.console_cmd}>echo 'Hello, World!'</span>
+                <span className={styles.console_user}>admin@rewks.com</span>:<span className={styles.console_path}>~</span>$&nbsp;<span className={styles.console_cmd}>echo &apos;Hello, World!&apos;</span>
             </div>
         </main>
     )

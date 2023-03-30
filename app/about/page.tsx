@@ -17,7 +17,7 @@ export default function About() {
                 />
                 <div className={styles.about_text}>
                     <p>
-                        I'm rewks, a cyber security professional who has been involved in both red and blue sides of the industry since early 2019 though my interest in security as a hobby predates that. I currently work as a consultant penetration tester in the UK, and although I don't approach certifications like Ash Ketchum does Pokemon, I have attained CRTO, CRT, CPSA, OSCP, eCPPTv2 and Sec+.
+                        I&apos;m rewks, a cyber security professional who has been involved in both red and blue sides of the industry since early 2019 though my interest in security as a hobby predates that. I currently work as a consultant penetration tester in the UK, and although I don&apos;t approach certifications like Ash Ketchum does Pokemon, I have attained CRTO, CRT, CPSA, OSCP, eCPPTv2 and Sec+.
                     </p>
                     <p>
                         I enjoy learning about new stuff, perhaps too much as I can easily find myself hopping from one subject to the next on a weekly basis. So whilst the main focus of my blog posts will probably be security related, other subjects may also feature.
