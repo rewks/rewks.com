@@ -7,7 +7,7 @@ export default function About() {
             <h1 className={styles.about_slogan}>Hack the planet!</h1>
             <div className={styles.about_story}>
                 <Image
-                    src="/../public/root/dark-room-pc.png"
+                    src="/root/dark-room-pc.png"
                     alt="placeholder"
                     width={1024 / 4}
                     height={1280 / 4}

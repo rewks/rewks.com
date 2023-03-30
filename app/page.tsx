@@ -9,7 +9,7 @@ export default function Home() {
         <main className={styles.main_container}>
             <div className={styles.avatar_container}>
                 <Image
-                    src="/../public/root/synth-avatar.png"
+                    src="/root/synth-avatar.png"
                     alt="A.I generated art of the author"
                     width={1280 / 5}
                     height={1280 / 5}
