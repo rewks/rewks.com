@@ -1,0 +1,36 @@
+.about_container {
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.about_image {
+    border-radius: 10px;
+}
+
+.about_text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.5rem;
+}
+
+.about_container p {
+    font-size: 1.1rem;
+    line-height: 1.5rem;
+}
+
+.about_disclaimer {
+    margin-top: 2rem;
+    color: var(--tertiary);
+    font-size: 1rem;
+}
+
+.about_slogan {
+    color: var(--primary);
+    font-size: 2.5rem;
+    margin-top: 3rem;
+    text-align: center;
+}

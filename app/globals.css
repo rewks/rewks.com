@@ -73,6 +73,7 @@ a {
 
 .content_container {
   flex-grow: 1;
+  width: 100%;
   align-self: center;
   max-width: var(--page-max-width);
 }

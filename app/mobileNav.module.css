@@ -22,6 +22,7 @@
     justify-content: flex-start;
     align-items: flex-end;
     gap: 2rem;
+    display: none;
 }
 
 .mobile_nav_links {
