@@ -11,7 +11,6 @@ export default function About() {
                     alt="placeholder"
                     width={1024 / 4}
                     height={1280 / 4}
-                    quality={100}
                     priority
                     className={styles.about_image}
                 />
