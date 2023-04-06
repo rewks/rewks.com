@@ -1,5 +1,5 @@
 .about_container {
-    padding: 2rem 1rem 0 1rem;
+    padding-top: 6rem;
 }
 
 .about_slogan {
@@ -38,6 +38,10 @@
 }
 
 @media only screen and (max-width: 600px) {
+    .about_container {
+        padding-top: 3rem;
+    }
+
     .about_image {
         display: none;
     }
