@@ -18,7 +18,9 @@ export default function ThemeSwitch() {
     return <>
         <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                {mounted && (theme === 'dark') ? (
+                {mounted && (theme === 'light') ? (
+                    <path id="moon" fill="var(--primary)" d="M20.21,15.32A8.56,8.56,0,1,1,11.29,3.5a.5.5,0,0,1,.51.28.49.49,0,0,1-.09.57A6.46,6.46,0,0,0,9.8,9a6.57,6.57,0,0,0,9.71,5.72.52.52,0,0,1,.58.07A.52.52,0,0,1,20.21,15.32Z"/>
+                ) : (
                     <g id="sun">
                         <circle id="center" fill="var(--primary)" cx="12" cy="12" r="5"/>
                         <g id="flames" fill="var(--primary)">
@@ -32,8 +34,6 @@ export default function ThemeSwitch() {
                             <path d="M18.36,19.36a1,1,0,0,1-.7-.29L17,18.36A1,1,0,0,1,18.36,17l.71.71a1,1,0,0,1,0,1.41A1,1,0,0,1,18.36,19.36Z"/>
                         </g>
                     </g>
-                ) : (
-                    <path id="moon" fill="var(--primary)" d="M20.21,15.32A8.56,8.56,0,1,1,11.29,3.5a.5.5,0,0,1,.51.28.49.49,0,0,1-.09.57A6.46,6.46,0,0,0,9.8,9a6.57,6.57,0,0,0,9.71,5.72.52.52,0,0,1,.58.07A.52.52,0,0,1,20.21,15.32Z"/>
                 )}
             </svg>
         </button>

@@ -1,4 +1,17 @@
 :root {
+  --background: #263238;
+  --alt-background: #222222;
+  --primary: #ffffff;
+  --secondary: #cfd8dc;
+  --tertiary: #b0bec5;
+  --interactive: #e27a00;
+  --error: #bf0000;
+  --border: rgba(0, 0, 0, .5);
+  --mobile-nav: #263238ee;
+
+  --console-user: #00ff00;
+  --console-path: #20bbff;
+
   --card-border: rgba(0, 0, 0, 0.3);
   --card-background: #222222;
   --card-primary: #ffffff;
@@ -29,21 +42,6 @@
 
   --console-user: #b90000;
   --console-path: #004b91;
-}
-
-[data-theme="dark"] {
-  --background: #263238;
-  --alt-background: #222222;
-  --primary: #ffffff;
-  --secondary: #cfd8dc;
-  --tertiary: #b0bec5;
-  --interactive: #e27a00;
-  --error: #bf0000;
-  --border: rgba(0, 0, 0, .5);
-  --mobile-nav: #263238ee;
-
-  --console-user: #00ff00;
-  --console-path: #20bbff;
 }
 
 *,
