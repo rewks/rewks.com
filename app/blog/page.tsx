@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function PostList({ posts }: { posts: string[] }) {
+export default function PostList() {
   return (
     <ul>
       hi
