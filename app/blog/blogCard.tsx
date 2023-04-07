@@ -31,7 +31,6 @@ export default function BlogCard({
                         alt="Cover image for the blog post"
                         width={1280 / 6}
                         height={1280 / 6}
-                        priority
                         />
                 </div>
                 <div className={styles.bp_details}>
@@ -45,10 +44,7 @@ export default function BlogCard({
                         {description}
                     </div>
                     <div className={styles.bp_tags_container}>
-                        <span>hacking</span>
-                        <span>sql injection</span>
-                        <span>automation</span>
-                        <span>automation</span>
+                        {tags.map(tag => <span> {tag} </span>)}
                     </div>
                 </div>
             </div>

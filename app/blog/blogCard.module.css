@@ -1,8 +1,8 @@
 .card {
     text-align: left;
-    color: var(--card-primary);
-    background-color: var(--card-background);
-    box-shadow: 0 0 10px 2px var(--card-border);
+    color: var(--primary);
+    background-color: var(--alt-background);
+    box-shadow: 0 0 10px 2px var(--border);
     border-radius: 8px;
 
     display: flex;
@@ -21,63 +21,30 @@
 }
 
 .bp_title {
-    padding-top: 5px;
+    padding-top: 1rem;
     font-size: 1.6rem;
     font-weight: 700;
 }
 
 .bp_date {
-    color: var(--card-tertiary);
+    color: var(--tertiary);
     margin-top: -5px;
 }
 
 .bp_description {
     font-size: 1.2rem;
-    color: var(--card-secondary);
+    color: var(--secondary);
     flex-grow: 1;
 }
 
 .bp_tags_container {
-    font-size: 0.9rem;
-    font-style: italic;
-    padding-bottom: 16px;
+    color: var(--interactive);
+    padding-bottom: 1rem;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 5px;
+    gap: 1rem;
     flex-wrap: wrap;
-}
-
-.bp_tags_container > * {
-    border: 1px;
-    border-style: solid;
-    border-radius: 12px;
-    padding: 2px 5px;
-}
-
-.bp_tags_container > span:first-child  {
-    border-color: var(--first-tag);
-    background-color: var(--first-tag);
-}
-
-.bp_tags_container > span:nth-child(2) {
-    border-color: var(--second-tag);
-    background-color: var(--second-tag);
-}
-
-.bp_tags_container > span:nth-child(3) {
-    border-color: var(--third-tag);
-    background-color: var(--third-tag);
-}
-
-.bp_tags_container > span:nth-child(4) {
-    border-color: var(--fourth-tag);
-    background-color: var(--fourth-tag);
-}
-
-.bp_tags_container > span:nth-child(5) {
-    border-color: var(--fifth-tag);
-    background-color: var(--fifth-tag);
 }
 
 @media only screen and (max-width: 600px) {

@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { MDXRemote, compileMDX } from 'next-mdx-remote/rsc'
 import BlogCard from './blogCard'
+import styles from './page.module.css'
 
 const getPostByPostPath = async (fileName: string) => {
     const slug = fileName.replace('.mdx', '');
@@ -33,6 +34,8 @@ export default async function PostList() {
         return (a?.meta.date as string) > (b?.meta.date as string) ? -1 : 1;
     })
     return <>
-        {sortedPostList?.map(post => <BlogCard slug={post?.slug} meta={post?.meta}/>)}
+        <div className={styles.cards_container}>
+            {sortedPostList?.map(post => <BlogCard slug={post?.slug} meta={post?.meta}/>)}
+        </div>
     </>
 }
