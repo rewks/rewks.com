@@ -25,20 +25,19 @@ export default function BlogCard({
             key={slug}
         >
             <div className={styles.card}>
-                <div className={styles.bp_image}>
-                    <Image
-                        src={image}
-                        alt="Cover image for the blog post"
-                        width={1280 / 6}
-                        height={1280 / 6}
-                        />
-                </div>
+                <Image
+                    src={image}
+                    alt="Cover image for the blog post"
+                    width={1280 / 6}
+                    height={1280 / 6}
+                    className={styles.bp_image}
+                />
                 <div className={styles.bp_details}>
                     <div className={styles.bp_title}>
                         {title}
                     </div>
                     <div className={styles.bp_date}>
-                        Posted on: {date}
+                        Posted on {date}
                     </div>
                     <div className={styles.bp_description}>
                         {description}
