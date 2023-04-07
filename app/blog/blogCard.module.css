@@ -16,6 +16,7 @@
 .bp_image {
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
+    margin: 0;
 }
 
 .bp_details {

@@ -20,9 +20,9 @@ psst... if you _do_ decide to take my images and reuse them, that is fine but if
 <Image
     src="/blog-images/ai-art-stable-diffusion/japanese-man-bike-tokeo.png"
     alt="japanese-man-bike-tokeo.png"
-    width={768}
-    height={512}
-    description="Japanese man sitting on his motorbike in Tokyo"
+    layout="responsive"
+    width={1536}
+    height={1024}
 />
 
 ## Stable Diffusion
@@ -31,13 +31,15 @@ There is a saying _"When it rains, it pours"_ which applies to many things in li
 
 Some of these services were quite impressive in their outputs whilst others were less so, but either way I was left unsatisfied with the low image resolution and limited availability so I looked for how I could actually do this stuff on my own PC. It did not actually take long to come across Stable Diffusion and Midjourney. I expect the pros and cons of each could be debated endlessly but I will asbtain from such discussions as I have so far only tried Stable Diffusion.
 
-<Image
-    src="/blog-images/ai-art-stable-diffusion/woman-asian-temples.png"
-    alt="woman-asian-temples.png"
-    width="640"
-    height="640"
-    description="A white haired young woman infront of some Asian temples"
-/>
+<div className="img_half_screen">
+    <Image
+        src="/blog-images/ai-art-stable-diffusion/woman-asian-temples.png"
+        alt="woman-asian-temples.png"
+        layout="responsive"
+        width={1280}
+        height={1280}
+    />
+</div>
 
 At first glance the images that people post online will look incredible. If anyone can just run some words through a program and get this high quality art, what do we need artists for? Surely their jobs have been automated away right? In my opinion, no. Not yet. Maybe not ever.
 
@@ -45,37 +47,43 @@ At first glance the images that people post online will look incredible. If anyo
 
 What I think is important to understand is that everything that is output is based on a finite set of training data. When you want to generate some images you need to choose a checkpoint file to use. In the simplest terms a checkpoint file is simply an end result of a set of training data, and the creators probably had a particular style in mind when collating it all. Maybe it focuses on animals, photorealistic humans, RPG style art, anime, cyberpunk and so on. The larger the training data set, the more varied the outputs may be but it will likely always lack variety in some form. This tends to become evident when you generate a sufficient amount of images - you start to notice how even though many of the results look fantastic, there are definite similarities between them. For example, you may create countless pictures of a young white brunette woman in various contexts and notice that she has a pretty similar generic facial structure in all of them. In real life every person is noticeably different; different nose shapes and sizes, different eye shapes, cheek bones, jaw lines and so on. Due to the limitations of training data, there will be less variety of these things in the outputs.
 
-<Image
-    src="/blog-images/ai-art-stable-diffusion/old-man-in-forest.png"
-    alt="old-man-in-forest.png"
-    width="512"
-    height="512"
-    description="An old druidic man in a forest"
-/>
+<div className="img_half_screen">
+    <Image
+        src="/blog-images/ai-art-stable-diffusion/old-man-in-forest.png"
+        alt="old-man-in-forest.png"
+        layout="responsive"
+        width={1024}
+        height={1024}
+    />
+</div>
 
 ### Understanding of the user's desires
 
 AI does what I consider to be a seriously impressive job of taking in text prompts and making images that more or less conform to them. However, they will never(?) be truly accurate or as flexible as a human can be. You can feed in the most descriptive prompt in the world but not everything you describe will be in the end result. You can assign weightings to keywords to improve likelihood of them influencing the output but again, in the end you're at the mercy of randomness. I think this is part of the excitement, the AI interpretation of your prompt may even result in an amazing image that you hadn't actually thought of. Still, if you have an image in your mind that you want recreated as accurately as possible your best bet is to work with a human artist who can consult you throughout the development of the artwork and make changes based on your direction.
 
-<Image
-    src="/blog-images/ai-art-stable-diffusion/female-white-gold-angel.png"
-    alt="female-white-gold-angel.png"
-    width="512"
-    height="768"
-    description="A celestial female holy empress"
-/>
+<div className="img_half_screen">
+    <Image
+        src="/blog-images/ai-art-stable-diffusion/female-white-gold-angel.png"
+        alt="female-white-gold-angel.png"
+        layout="responsive"
+        width={1024}
+        height={1536}
+    />
+</div>
 
 ### Flaws in the image
 
 It is not hard to find examples of glaring flaws in images, even if they are perfect at a glance. If you scroll back up to the first image I included on this page you can see half of his index finger is missing! From minor flaws like this, or a missing earring, or liquidy eyes to major mistakes like an arm bending the wrong way or fireplaces blending into each other through some weird extradimensional plane, there is almost always something you can point to and say "yep, this is AI made". Whilst all this may be acceptable for the average person having fun with this as a hobby, or making a super cool character portrait for their Dungeons and Dragons character, it just will not cut it for professional use cases.
 
-<Image
-    src="/blog-images/ai-art-stable-diffusion/female-dark-wings-fire.png"
-    alt="female-dark-wings-fire.png"
-    width="512"
-    height="768"
-    description="A winged female dark warrior with a broken blade"
-/>
+<div className="img_half_screen">
+    <Image
+        src="/blog-images/ai-art-stable-diffusion/female-dark-wings-fire.png"
+        alt="female-dark-wings-fire.png"
+        layout="responsive"
+        width={1024}
+        height={1536}
+    />
+</div>
 
 ## Thoughts on the future
 
