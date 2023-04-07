@@ -28,26 +28,28 @@ export default function BlogCard({
                 <div className={styles.bp_image}>
                     <Image
                         src={image}
-                        alt="A.I generated art of the author"
-                        width={1280 / 5}
-                        height={1280 / 5}
+                        alt="Cover image for the blog post"
+                        width={1280 / 6}
+                        height={1280 / 6}
                         priority
                         />
                 </div>
-                <div className={styles.bp_title}>
-                    {title}
-                </div>
-                <div className={styles.bp_description}>
-                    {description}
-                </div>
-                <div className={styles.bp_tags_container}>
-                    <span>hacking</span>
-                    <span>sql injection</span>
-                    <span>automation</span>
-                    <span>automation</span>
-                </div>
-                <div className={styles.bp_date}>
-                    Posted on: {date}
+                <div className={styles.bp_details}>
+                    <div className={styles.bp_title}>
+                        {title}
+                    </div>
+                    <div className={styles.bp_date}>
+                        Posted on: {date}
+                    </div>
+                    <div className={styles.bp_description}>
+                        {description}
+                    </div>
+                    <div className={styles.bp_tags_container}>
+                        <span>hacking</span>
+                        <span>sql injection</span>
+                        <span>automation</span>
+                        <span>automation</span>
+                    </div>
                 </div>
             </div>
         </Link>
