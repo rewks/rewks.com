@@ -1,0 +1,59 @@
+---
+title: "Automating a simple Velociraptor deployment in AWS (Part 1)"
+date: '2022-11-01'
+tags: ['velociraptor', 'incident response', 'automation', 'aws', 'terraform']
+description: "I take a peek into the world of devops and infrastructure as code using Terraform and Ansible."
+---
+
+## Background
+
+I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool <Link href="https://www.terraform.io/">Terraform</Link> and immediately starting thinking how I could incorporate this into my job too.
+
+At the time, we as a team had started getting more frequent requests from clients asking for aid in investigating potential or confirmed breaches on their network. We had moved towards using a tool called <Link href="https://docs.velociraptor.app/">Velociraptor</Link> to aid in our investigations, but it would not be used often enough to warrant a permanent deployment with the associated costs. This was, I thought, the perfect opportunity to introduce some automation whereby we could run a Terraform script to spin up an environment as needed rather than manually setting it up each time.
+
+## Architecture
+
+Firstly I had to plan where it would sit and what components would be needed. It was an easy choice to look at AWS for hosting, as we already have a tenancy with some testing servers. So after presenting my plan to the boss and being granted approval for the project, I went to the drawing board. What I ended up with was pretty simple, since our use-case did not demand anything more and there is a lot to be said for the KISS principle (Keep It Simple, Stupid!).
+
+We have a VPC, inside of which sits a subnet with appropriate access rules. Inside the subnet we have an ec2 instance on which runs the Velociraptor server, and an EFS for encrypted data storage. Finally a subdomain A record is created in our hosted zone on Route53 for the deployed client exectuables to call back to. Now, some of these components incur running costs, and some do not. For the ones that do not incur costs, we leave them set up permanently. A side bonus of this is that it is easier to have multiple Velociraptor instances spun up concurrently without having to worry about conflicting addresses/the person running the script having to remember to specify an unused IP range for a new subnet.
+
+### Permanent costless components:
+
+- **Virtual Private Cloud**: The overall container that all the other infrastructure is placed in
+- **Internet Gateway**: Enables resources within the VPC to connect to the internet
+- **Routing Table**: Routing table for the gateway
+- **Subnet**: Subset of the IP range within the VPC, contains the Velociraptor server(s) and file store(s)
+- **Network ACL**: Access control list associated with the subnet. Contains rules which define ingress and egress traffic permitted
+- **Hosted Zone**: A hosted zone within Amazon's Route53 DNS service. This has a small cost but already exists for other business purposes, so no additional cost here
+
+### Terraform managed components:
+
+- **Key Pair**: A unique key pair is generated along with each deployment to grant SSH access to the server
+- **Elastic Compute Cloud (EC2)**: The server which Velociraptor runs on
+- **Electronic File System (EFS)**: An encrypted auto-scaling storage mounted to the Velociraptor server
+- **Security Groups**: Security groups and rules that are associated with the EC2 and EFS which allow more granular rules for each deployment
+- **DNS Record**: A subdomain created for each deployment, pointing to the Velociraptor server public IP
+
+Upon the start of an incident response case, the above terraform managed components are created by a script - and once the investigation has concluded, the script is run once more to delete them.
+
+*Note: In addition to the above, there are some additional pre-requisites for anyone who will be running the script. The AWS CLI must be installed, and configured with access keys with the following permissions; AmazonEC2FullAccess, AmazonElasticFileSystemFullAccess, AmazonRoute53FullAccess. Further, Terraform and Ansible must also be installed.*
+
+## Security Concerns
+
+By nature, access to the analyst web interface and client-server listening service happen over the internet. Obviously, sensitive information will be transmitted to and stored on the Velociraptor server. We make use of security group rules (think firewall rules) to limit access appropriately.
+
+1. Firstly, the EFS used for storage of client data can only be accessed by the specific EC2 hosting the Velociraptor server. No other sources can touch it. The EFS is also encrypted at rest.
+2. The web interface used by analysts conducting the investigation is restricted and only traffic originating from our own corporate IPs (sepcifically the security team dedicated VPN) are able to reach it.
+3. Thirdly, the service listening for client callbacks is also restricted, with a whitelist consisting of the client's corporate IPs.
+
+This ensures no aspects of the deployment are visible to third parties, whether that be scanning bots, security researchers or malicious actors.
+
+## Module Design
+
+In order to keep everything organised and segmented, I decided to create a module for each aspect of the script.
+
+**Networking**: This module is responsible for initialisation of data sources pointing to the pre-created VPC and Subnet. These data sources are like handles that the rest of the script will use to add or remove new components.  
+**Routing**: This module simply adds a new A record into our hosted zone in AWS Route 53 that points a new subdomain at the EC2 public IP.  
+**App**: The main one. This module handles creation of the EC2, the EFS and all of the appropriate traffic control rules. In addition, it creates a new SSH key for admin access and runs a cloud-init and Ansible script to handle configuration of the server after the first boot.
+
+I wanted to get this blog post finished in one sitting, but my train is nearing my destination so I will have to split it (apologies for the abrupt ending). Thus concludes part 1 of this blog post. With the purpose of the project outlined and the design laid out, part 2 will dive into the actual Terraform and Ansible code that makes the magic happen!

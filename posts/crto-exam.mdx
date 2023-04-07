@@ -1,0 +1,21 @@
+
+
+### The Exam
+
+Ok so this is probably what anyone reading this is here for. So first a disclaimer: I will not be disclosing any details of the exam that are not already public domain.
+
+I started the exam pretty slowly, setting up the server and the handful of aggressor scripts I had prepared. About an hour later I actually made my move against the first target. This was where I encountered block #1 - how do I actually get the initial beacon? Defender and Applocker are enabled throughout the environment so it was not actually as simple as one may think. Still, the answer is within the course materials, I just had to engage my brain.
+
+The second flag fell quickly, but then I ran into real issues. Stability horror. For the next six or seven hours I made glacial progress, not through any fault of my own. I knew exactly what I needed to be doing but the lab environment was not playing nicely. Beacons were laggy, in some cases taking up to 3 minutes to return a response. Sometimes they would just die completely for no apparent reason. I would also encounter authentication errors or Service Control Manager errors all over the place despite having appropriate permissions. I rebooted the lab multiple times, even did a complete revert and had to go through all the setup again. Nothing helped. Then suddenly everything started working. Lag was almost entirely gone, the mysterious authentication gremlins had disappeared and I was able to proceed. I guess I will blame Friday afternoon usage load taking its toll on AWS where the labs are hosted..?
+
+Halfway through the flags I encountered block #2. I knew what I had to do, but how did I adapt it to this exam environment? It took a while and I seriously overcomplicated it until I took a step back and remembered a technique I used to use on some HackTheBox machines. I quickly continued on and reached the six flag checkpoint. I had passed!
+
+Reading other reviews before my exam I saw that a lot of people stop at six flags and I don't understand why. You're not going to come back and do this exam again, why leave part of it untouched? I went to bed and when I woke up in the morning, it was game on!
+
+Now I understood why some people chose, or perhaps just failed to get the last flags. This was block #3 and it took a lot of thinking to figure out how to exploit the thing I wanted to exploit. In the end I managed it, although I'm not sure if I did it the intended way because I bypassed flag 7 and went straight to flag 8! Still, getting number 7 afterwards was merely a formality. I had achieved 8/8 flags and could be happy with myself.
+
+Tips for the exam:
+
+1. Maybe don't start it on a Friday
+2. If you are having really bad stability issues try not to get too stressed. You have 48 hours of lab time, it is more than enough. Just wait it out.
+3. Make sure you're read the entire course. There are some useful notes that aren't explicitly demonstrated in the examples but can get you thinking on how to adapt some techniques.
