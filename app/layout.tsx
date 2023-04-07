@@ -2,9 +2,9 @@ import './globals.css'
 import Providers from './providers'
 import Header from './header'
 import Footer from './footer'
-import { Roboto } from 'next/font/google'
+import { Rubik } from 'next/font/google'
 
-const roboto = Roboto({ weight: ['400', '500', '700'], subsets: ['latin'] })
+const rubik = Rubik({ weight: ['400', '500', '600', '700'], subsets: ['latin'] })
 
 export const metadata = {
     title: 'rewks',
@@ -35,7 +35,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={roboto.className}>
+            <body className={rubik.className}>
                 <Providers>
                     <Header />
                     <div className="content_container">

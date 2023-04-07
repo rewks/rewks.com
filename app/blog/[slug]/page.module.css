@@ -1,0 +1,14 @@
+.post_header {
+    padding-top: 1rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.post_header h1 {
+    color: var(--primary);
+}
+
+.post_header h5 {
+    color: var(--tertiary);
+    margin-top: -0.5rem;
+}

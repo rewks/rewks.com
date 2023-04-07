@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getAllPostsMeta } from '@/lib/mdx-reader'
 import BlogCard from './blogCard'
 import styles from './page.module.css'
