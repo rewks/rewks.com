@@ -30,6 +30,7 @@ export default function BlogCard({
                     alt="Cover image for the blog post"
                     width={1280 / 6}
                     height={1280 / 6}
+                    priority
                     className={styles.bp_image}
                 />
                 <div className={styles.bp_details}>

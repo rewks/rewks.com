@@ -5,8 +5,10 @@
   --secondary: #cfd8dc;
   --tertiary: #b0bec5;
   --interactive: #e27a00;
+  --interactive-secondary: #0ecff1;
   --error: #bf0000;
   --border: rgba(0, 0, 0, .5);
+  --border-highlight: #0ecff140;
   --mobile-nav: #263238ee;
 
   --console-user: #00ff00;
