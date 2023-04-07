@@ -1,9 +1,9 @@
 ---
 title: 'PicoCTF 2022: Noted [web - 500pts]'
 date: '2022-03-27'
-tags: ['xss', 'same origin policy', 'javascript', 'ctf', 'pico']
+tags: ['XSS', 'SAME ORIGIN POLICY', 'JAVASCRIPT', 'CTF', 'PICO']
 description: 'To solve this challenge we need to make use of stored cross-site scripting (XSS) as well as server-side request forgery (SSRF) whilst taking advantage of an automated user in the form of a headless chrome browser.'
-image: ''
+image: '/blog-images/picoctf-noted/challenge-info-window.png'
 draft: false
 ---
 
@@ -16,7 +16,7 @@ We are presented with an app allowing us to register a user and save notes in ou
 Another key feature of the app is the /report page where we are able to submit a URL presumably for review by an admin. As seen in the challenge info window, the challenge server does not have outbound internet access and so we will be unable to exfiltrate any information to a server under our control.
 
 <BlogImage
-    src="/images/picoctf-noted/challenge-info-window.png"
+    src="/blog-images/picoctf-noted/challenge-info-window.png"
     alt="challenge-info-window.png"
     width="960"
     height="447"
@@ -170,7 +170,7 @@ fetch('http://0.0.0.0:8080/new')
 After submitting both payloads, we can simply refresh the /notes page and find the challenge flag waiting for us. More accurately find many challenge flags waiting for us. The above method may not be the tidiest, in that after posting the flag as a new note the bot will of course be redirected to /notes where the XSS payload will once again be executed forming an infinite loop. The payload likely can be adapted to avoid this but as it is merely a CTF and the server gets terminated as soon as you submit the flag I did not worry about it. Consider this an excercise left to the reader! ;)
 
 <BlogImage
-    src="/images/picoctf-noted/flag-posted-to-notes.png"
+    src="/blog-images/picoctf-noted/flag-posted-to-notes.png"
     alt="flag-posted-to-notes.png"
     width={995}
     height={585}

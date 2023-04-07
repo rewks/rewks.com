@@ -1,9 +1,9 @@
 ---
 title: 'Setting up interfaces and testing across VLANs'
 date: '2022-12-14'
-tags: ['vlan', 'networking', 'cisco', 'lab']
+tags: ['VLAN', 'NETWORKING', 'CISCO', 'LAB']
 description: 'A short outline on how to configure interfaces with a VLAN id (Kubuntu 22.04)'
-image: ''
+image: '/blog-images/vlan-testing/gui-vlan-settings.png'
 draft: false
 ---
 
@@ -27,7 +27,7 @@ We can then use the command `modinfo 8021q` to verify it is loaded, and to make 
 Depending on the desktop environment in use, the network manager may have an option to create a VLAN connection. Plain Ubuntu does not anymore... because GNOME devs do GNOME dev things. I use Kubuntu (KDE) so the example screenshots below are from that. It is pretty straight forward, simply enter the network manager and create a new connection using the VLAN option inside the 'Virtual connections' section of the menu.
 
 <BlogImage 
-    src='/images/vlan-testing/gui-connection-type.png'
+    src='/blog-images/vlan-testing/gui-connection-type.png'
     alt='gui-connection-type.png'
     width='492'
     height='627' 
@@ -36,7 +36,7 @@ Depending on the desktop environment in use, the network manager may have an opt
 When configuring the connection you get four tabs. Generally only two will be of interest, the Vlan and the IPv4 tabs. On the Vlan tab choose the parent interface - this is the physical ethernet interface on top of which we will set our virtual interface. Also set the VLAN id and give it an appropriate name. On the IPv4 tab set the IP address you have been assigned, the network mask and default gateway.
 
 <BlogImage 
-    src='/images/vlan-testing/gui-vlan-settings.png'
+    src='/blog-images/vlan-testing/gui-vlan-settings.png'
     alt='gui-vlan-settings.png'
     width='460'
     height='639' 
