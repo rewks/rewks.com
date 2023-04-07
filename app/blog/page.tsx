@@ -20,25 +20,27 @@ const getAllPostsMeta = async () => {
     const files = fs.readdirSync(path.join('posts'))
     const promises = files.map(async (filename) => {
         const { slug, meta } = await getPostByPostPath(filename)
-        return { slug, meta }
+        return meta.draft === true ? null : { slug, meta }
     })
     const posts = await Promise.all(promises)
-    return posts
+    return posts.filter(Boolean)
 }
 
 export default async function PostList() {
     const postList = await getAllPostsMeta();
+    const sortedPostList = postList.sort((a, b) => {
+        return (a?.meta.date as string) > (b?.meta.date as string) ? -1 : 1;
+    })
     return <>
-        {postList?.map(post => (
-            ( post.meta.draft === true ? <></> : 
-                <Link 
-                    href={`blog/${post.slug}`}
-                    key={post.slug}
-                >
-                    <h1>{post?.slug}</h1>
-                    <p>{post.meta.title as string}</p>
-                </Link>
-            )
+        {sortedPostList?.map(post => (
+            <Link
+                href={`blog/${post?.slug}`}
+                key={post?.slug}
+            >
+                <h1>{post?.slug}</h1>
+                <p>{post?.meta.title as string}</p>
+                <p>{post?.meta.date as string}</p>
+            </Link>
         ))}
     </>
 }
