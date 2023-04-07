@@ -117,10 +117,26 @@ img {
 
 .img_three_quarters_screen {
     max-width: calc(var(--page-max-width) * 0.75);
+    margin: 0 auto;
+}
+
+.img_two_thirds_screen {
+    max-width: calc(var(--page-max-width) * 0.66);
+    margin: 0 auto;
 }
 
 .img_half_screen {
     max-width: calc(var(--page-max-width) * 0.5);
+    margin: 0 auto;
+}
+
+.img_one_third_screen {
+    max-width: calc(var(--page-max-width) * 0.33);
+    margin: 0 auto;
+}
+
+.img_quarter_screen {
+    max-width: calc(var(--page-max-width) * 0.25);
     margin: 0 auto;
 }
 
