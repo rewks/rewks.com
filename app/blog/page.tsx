@@ -30,10 +30,15 @@ export default async function PostList() {
     const postList = await getAllPostsMeta();
     return <>
         {postList?.map(post => (
-            <Link href={`blog/${post.slug}`}>
-                <h1>{post?.slug}</h1>
-                <p>{post.meta.title as string}</p>
-            </Link>
+            ( post.meta.draft === true ? <></> : 
+                <Link 
+                    href={`blog/${post.slug}`}
+                    key={post.slug}
+                >
+                    <h1>{post?.slug}</h1>
+                    <p>{post.meta.title as string}</p>
+                </Link>
+            )
         ))}
     </>
 }
