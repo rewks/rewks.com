@@ -15,6 +15,7 @@
 
 .post_content a {
     text-decoration: underline;
+    text-underline-offset: 3px;
     color: var(--interactive-secondary);
     font-weight: 500;
 }

@@ -18,14 +18,10 @@
     width: min(100%, var(--page-max-width));
 }
 
-.header_item1 {
-    justify-self: flex-start;
-    flex-grow: 1;
-}
-
 .header_item2 {
+    flex-grow: 1;
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end;
     align-items: center;
 }
 
