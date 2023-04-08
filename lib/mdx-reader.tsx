@@ -4,12 +4,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Quote from '@/lib/quote'
 import { compileMDX } from 'next-mdx-remote/rsc'
-import { stringify } from 'querystring'
-import { Z_UNKNOWN } from 'zlib'
+
+const root = path.join(process.cwd(), 'app', 'blog-posts')
 
 export async function getPostByName(fileName: string) {
     const slug = fileName.replace('.mdx', '');
-    const postPath = path.join('posts', fileName);
+    const postPath = path.join(root, fileName);
     const postContent = fs.readFileSync(postPath, { encoding: 'utf8' });
 
     const { frontmatter, content } = await compileMDX({
@@ -26,7 +26,7 @@ export async function getPostByName(fileName: string) {
 }
 
 export async function getAllPostsMeta() {
-    const files = fs.readdirSync(path.join('posts'))
+    const files = fs.readdirSync(root)
     const promises = files.map(async (filename) => {
         const { slug, meta } = await getPostByName(filename)
         return meta.draft === true ? null : { slug, meta }
