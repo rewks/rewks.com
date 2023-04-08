@@ -107,7 +107,7 @@ We don't have to look far before we see connect-redis and redis. The name of the
 
 ## Redis RCE
 
-> The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker.
+<Quote text="The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker." author="Redis Marketing Team" />
 
 So the question becomes, how can we force the app to send commands to the Redis service? It's not like we can connect with a proper redis client. Luckily there is plenty of reading material online if you google SSRF and Redis. It doesn't take long until we discover the gopher protocol. Without going into too much detail, Redis prior to version 7.0 supports the protocol which allows us to send commands similarly to how one would use HTTP to request a web page.
 
