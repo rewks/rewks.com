@@ -9,7 +9,13 @@ export default async function PostList() {
     })
     return <>
         <div className={styles.cards_container}>
-            {sortedPostList?.map(post => <BlogCard slug={post?.slug} meta={post?.meta}/>)}
+            {sortedPostList.map(post => (
+                <BlogCard
+                    key={post.slug}
+                    slug={post.slug}
+                    meta={post.meta}
+                />
+            ))}
         </div>
     </>
 }

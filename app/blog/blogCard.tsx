@@ -6,13 +6,9 @@ export default function BlogCard({
     slug,
     meta,
 }:{
-    slug: string | undefined,
-    meta: { [x: string] : unknown } | undefined,
+    slug: string,
+    meta: { [x: string] : unknown },
 }) {
-    if (slug === undefined || meta === undefined) {
-        return <></>
-    }
-
     const title = meta.title as string
     const date = meta.date as string
     const description = meta.description as string
@@ -22,7 +18,6 @@ export default function BlogCard({
     return <>
         <Link
             href={`blog/${slug}`}
-            key={slug}
         >
             <div className={styles.card}>
                 <Image
@@ -44,7 +39,7 @@ export default function BlogCard({
                         {description}
                     </div>
                     <div className={styles.bp_tags_container}>
-                        {tags.map(tag => <span> {tag} </span>)}
+                        {tags.map(tag => <span key={tag}> {tag} </span>)}
                     </div>
                 </div>
             </div>
