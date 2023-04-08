@@ -14,6 +14,9 @@
     --console-user: #00ff00;
     --console-path: #20bbff;
 
+    --quote-background: #22222277;
+    --quote-border: #0ecff140;
+
     --card-border: rgba(0, 0, 0, 0.3);
     --card-background: #222222;
     --card-primary: #ffffff;
@@ -44,6 +47,9 @@
 
     --console-user: #b90000;
     --console-path: #004b91;
+
+    --quote-background: #e4e5f177;
+    --quote-border: #0ecff140;
 }
 
 *,
@@ -107,7 +113,8 @@ li {
     line-height: 1.4;
 }
 
-ol {
+ol,
+ul {
     padding-left: 1rem;
 }
 

@@ -3,7 +3,7 @@ title: 'Cyber Apocalypse CTF 2022: Red Island [web - 325pts]'
 date: '2022-05-19'
 tags: ['SSRF', 'REDIS', 'RCE', 'CTF']
 description: "For this web challenge we'll chain together multiple vulnerabilities, starting from a simple SSRF and resulting in RCE through a Redis service."
-image: '/blog-images/cactf-red-island/challenge-home-page.png'
+image: '/blog-images/cactf-red-island/CA_2022_CTF_logo2.png'
 draft: false
 ---
 
@@ -15,11 +15,12 @@ Upon first accessing the challenge application, we find a basic login/registrati
 
 The application is very small, with a single page. There is a logout button and more interestingly another form which is asking for a picture url, the button contains the text "convert". If we were to submit a valid link to an image, the app would grab it, process it (i.e. make it much more red) and return it back to us. The intended use of the app is not helpful in solving this challenge but if we look at the request itself we can see it is sending JSON post data containing the supplied URL.
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/challenge-home-page.png"
     alt="challenge-home-page.png"
-    width="782"
-    height="284" 
+    width={1185}
+    height={430}
+    style={{width: "100%", height: "auto"}}
 />
 
 ## Server-side Request Forgery
@@ -28,20 +29,22 @@ If you have a bit of experience with web application testing or CTFs, your mind 
 
 Before we continue, I think it is good to highlight the importance of error messages. If we break the request by submitting an invalid JSON structure (simply adding an erroneous apostrophe), the application complains. In this complaint is another vulnerability; an information disclosure. Reading this error message we can see the local file path of the application, which saves us some time/guessing later. 
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/error-path-disclosure.png"
     alt="error-path-disclosure.png"
-    width="766"
-    height="315" 
+    width={1532}
+    height={631}
+    style={{width: "100%", height: "auto"}}
 />
 
 As in other challenges, a good first idea is to try and learn more about the application itself by reading the application source code. In this case it is pretty simple, we can use the file:// scheme instead of http, and combined with our knowledge of the app location from the earlier info disclosure we can easily retrieve the source code of the main file /app/index.js 
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/index-source-code.png"
     alt="index-source-code.png"
-    width="762"
-    height="256" 
+    width={1524}
+    height={511}
+    style={{width: "100%", height: "auto"}}
 />
 
 Copying the response to a text editor and doing a couple Find and Replace edits makes the code perfectly readable.
@@ -104,7 +107,7 @@ We don't have to look far before we see connect-redis and redis. The name of the
 
 ## Redis RCE
 
-<Quote text="The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker." author="Redis Marketing Team" />
+> The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker.
 
 So the question becomes, how can we force the app to send commands to the Redis service? It's not like we can connect with a proper redis client. Luckily there is plenty of reading material online if you google SSRF and Redis. It doesn't take long until we discover the gopher protocol. Without going into too much detail, Redis prior to version 7.0 supports the protocol which allows us to send commands similarly to how one would use HTTP to request a web page.
 
@@ -138,16 +141,17 @@ QUIT        # Second command: first argument value
 
 Of course, sending some of these characters (like CRLF) over an HTTP request is no good so we URL encode the special characters, which gives the messy string seen earlier with all the %0D%0A stuff. Sending this simple request as a test to the challenge shows that we can indeed execute redis commands in this way. Note that it may take multiple requests to get a proper response, sometimes we just get a generic error. When it works, we see inside the error text the response to the Redis cmd - "sess:TpBkT-zG-PLzxuH-yzZ3-S5SGVpY23ag" 
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/redis-keys.png"
     alt="redis-keys.png"
-    width="761"
-    height="220" 
+    width={1521}
+    height={440}
+    style={{width: "100%", height: "auto"}}
 />
 
 ## LUA Scripting and Sandbox Escape
 
- In some CTFs the journey may end here, with the flag hidden in a key or something like that. Not the case here. The flag is somewhere on the filesystem and we need to find and read it. Another key feature of redis is the ability to execute LUA scripts. LUA scripts are intended to be sandboxed but earlier this year Reginaldo Silva <Link href="https://www.ubercomp.com/posts/2022-01-20_redis_on_debian_rce">published a sandbox escape technique</Link> he had discovered [CVE-2022-0543]. Using this, we can achieve full RCE on the target.
+ In some CTFs the journey may end here, with the flag hidden in a key or something like that. Not the case here. The flag is somewhere on the filesystem and we need to find and read it. Another key feature of redis is the ability to execute LUA scripts. LUA scripts are intended to be sandboxed but earlier this year Reginaldo Silva [published a sandbox escape technique](https://www.ubercomp.com/posts/2022-01-20_redis_on_debian_rce) he had discovered [CVE-2022-0543]. Using this, we can achieve full RCE on the target.
 
 Other articles and blog posts modify the proof-of-concept (PoC) that Reginaldo posted slightly, so that the output of the command is returned to us. The LUA script PoC is shown below: 
 
@@ -162,7 +166,7 @@ return res
 ```
 </div>
 
-The above script needs to be passed into a redis EVAL command, but firstly we should check that our environment matches. We can do this quickly by using the SSRF to request file:///usr/lib/x86_64-linux-gnu/liblua5.1.so.0. The response is large so I won't include it here but suffice to say it confirms the presence of the required library so our attack should work. To send the script it needs to be added as an argument to an EVAL command and of course, "gopherised". To aid in this I put together a simple python script that will spit out the gopher URL. Credit to <Link href="https://github.com/xmsec/redis-ssrf/blob/master/ssrf-redis.py">this github repo</Link> which I based my script heavily on. 
+The above script needs to be passed into a redis EVAL command, but firstly we should check that our environment matches. We can do this quickly by using the SSRF to request file:///usr/lib/x86_64-linux-gnu/liblua5.1.so.0. The response is large so I won't include it here but suffice to say it confirms the presence of the required library so our attack should work. To send the script it needs to be added as an argument to an EVAL command and of course, "gopherised". To aid in this I put together a simple python script that will spit out the gopher URL. Credit to [this github repo](https://github.com/xmsec/redis-ssrf/blob/master/ssrf-redis.py) which I based my script heavily on. 
 
 <div className="code">
 ```python
@@ -224,27 +228,30 @@ QUIT
 
 The response from the challenge server confirms we have full-blown RCE (remember it may take a few attempts). 
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/rce-id.png"
     alt="rce-id.png"
-    width="762"
-    height="231" 
+    width={1523}
+    height={462}
+    style={{width: "100%", height: "auto"}}
 />
 
  From here it is a straightforward stroll to the finish. Enumerate the filesystem and find the flag file in /root (surprise surprise). cat the flag file and submit for those sweet points.
 
 <div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24197%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27cat%20/root/flag%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A `</div>
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/rce-cat-flag.png"
     alt="rce-cat-flag.png"
-    width="761"
-    height="230" 
+    width={1524}
+    height={459}
+    style={{width: "100%", height: "auto"}}
 />
 
-<BlogImage 
+<Image 
     src="/blog-images/cactf-red-island/flag-on-dashboard.png"
     alt="flag-on-dashboard.png"
-    width="840"
-    height="292" 
+    width={1120}
+    height={389}
+    style={{width: "100%", height: "auto"}} 
 />

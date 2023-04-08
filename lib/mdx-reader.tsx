@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import Image from 'next/image'
+import Link from 'next/link'
+import Quote from '@/lib/quote'
 import { compileMDX } from 'next-mdx-remote/rsc'
 
 export const getPostByName = async (fileName: string) => {
@@ -13,6 +15,8 @@ export const getPostByName = async (fileName: string) => {
         options: { parseFrontmatter: true },
         components: {
             Image,
+            Link,
+            Quote,
         }
     })
 

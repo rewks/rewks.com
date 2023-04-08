@@ -3,15 +3,15 @@ title: 'Automating a simple Velociraptor deployment in AWS (Part 1)'
 date: '2022-11-01'
 tags: ['VELOCIRAPTOR', 'INCIDENT RESPONSE', 'AUTOMATION', 'TERRAFORM', 'AWS']
 description: 'I take a peek into the world of devops and infrastructure as code using Terraform and Ansible.'
-image: ''
+image: '/blog-images/automated-velociraptor-deployment/cover-img.png'
 draft: false
 ---
 
 ## Background
 
-I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool <Link href="https://www.terraform.io/">Terraform</Link> and immediately starting thinking how I could incorporate this into my job too.
+I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool [Terraform](https://www.terraform.io/) and immediately starting thinking how I could incorporate this into my job too.
 
-At the time, we as a team had started getting more frequent requests from clients asking for aid in investigating potential or confirmed breaches on their network. We had moved towards using a tool called <Link href="https://docs.velociraptor.app/">Velociraptor</Link> to aid in our investigations, but it would not be used often enough to warrant a permanent deployment with the associated costs. This was, I thought, the perfect opportunity to introduce some automation whereby we could run a Terraform script to spin up an environment as needed rather than manually setting it up each time.
+At the time, we as a team had started getting more frequent requests from clients asking for aid in investigating potential or confirmed breaches on their network. We had moved towards using a tool called [Velociraptor](https://docs.velociraptor.app/) to aid in our investigations, but it would not be used often enough to warrant a permanent deployment with the associated costs. This was, I thought, the perfect opportunity to introduce some automation whereby we could run a Terraform script to spin up an environment as needed rather than manually setting it up each time.
 
 ## Architecture
 

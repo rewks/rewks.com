@@ -3,7 +3,7 @@ title: "The future's bright, the future's ... Fuchsia?"
 date: '2022-04-26'
 tags: ['GOOGLE', 'OPERATING SYSTEM', 'OS', 'FUCHSIA']
 description: "In this blog I take an introductory look into Google's fledgeling operating system. What is the idea behind it, and what is the current state? Is it ready to use?"
-image: '/blog-images/fuchsia-os-intro/fuchsia-logo.png'
+image: '/blog-images/fuchsia-os-intro/fuchsia-coloured-logo.png'
 draft: false
 ---
 
@@ -13,13 +13,15 @@ Whatever the future may hold for this fledgling OS, this blog post is intended t
 
 Before we dive in, I'll answer one more question right here: why should I care? The answer to that is you shouldn't! Or you should. It's completely up to you, I'm willing to bet that many people - even techies - don't yet even know that Fuchsia exists, and it will likely be years before it starts popping up with regularity on user devices. Still, I'm a firm believer in keeping an eye on the horizon and at least being aware of major porjects that may come to the forefront over the next decade. Gaining understanding and experience with technologies early on can turn out to be very advantagous.
 
-<BlogImage 
-    src="/blog-images/fuchsia-os-intro/fuchsia-logo.png" 
-    alt="fuchsia-logo.png" 
-    width="800" 
-    height="200" 
-    description="Yes, I am also a bit confused that the logo is not fuchsia coloured." 
-/>
+<div className="img_half_screen">
+    <Image 
+        src="/blog-images/fuchsia-os-intro/fuchsia-logo.png"
+        alt="fuchsia-logo.png"
+        width={1867}
+        height={432}
+        style={{width: "100%", height: "auto"}}
+    />
+</div>
 
 ## Background
 
@@ -29,24 +31,24 @@ Everyone knows that Google developed Android, one of the most common operating s
 
 The concept of this new OS is built on the principle of least privilege - something that all those working in information security will be familiar with. For anyone out of the loop, the idea is that anything or anyone should only be given the least possible set of permissions required to perform its or their role. Applying this to Fuchsia, Zircon itself only contains a minimal number of services necessary for the system to boot, talk to hardware and run userspace processes. Everything else, including the file system and network stack are loaded as isolated userspace components, greatly reducing the amount of system code running at the highest level of privilege.
 
-<BlogImage 
+<Image 
     src="/blog-images/fuchsia-os-intro/kernel-services.png"
     alt="kernel-services.png"
-    width="912"
-    height="310"
-    description="source: https://fuchsia.dev/fuchsia-src/get-started/sdk/learn/intro/zircon"
+    width={1598}
+    height={544}
+    style={{width: "100%", height: "auto"}}
 />
 
 ## State of development 
 
 Creating an operating system is no small task, especially when creating a design where system components integrate in a different way to established, mature operating systems. So yes, six years in and there is still a long way to go on the development front. However, it is at a point where you can build from source and start experimenting in an emulator. Just follow the guidance in the official docs <Link href='https://fuchsia.dev/fuchsia-src/get-started/get_fuchsia_source?hl=en'>here</Link> - be warned, building from source is resource intensive! You could even have a go at running the Chrome browser component in Fuchsia, although there are some notable bugs so I wouldn't recommend making it your primary way of browsing the internet just yet.
 
-<BlogImage 
+<Image 
     src="/blog-images/fuchsia-os-intro/fuchsia-chromium.png"
     alt="fuchsia-chromium.png"
-    width="912"
-    height="327"
-    description="chromium running in a Fuchsia emulator!"
+    width={980}
+    height={352}
+    style={{width: "100%", height: "auto"}}
 />
 
 In fact even if you can't be bothered with that, if you have a Google Nest Hub in your home you may already be a user. Google started rolling out Fuchsia to Nest Hubs last year, although reportedly users would not notice any significant changes to the interface or user experience. If you do have a Nest Hub, you can check if it is running on Fuchsia by going to the settings, navigating through **Device information** to **Technical information** and seeing if an **Operating System Version** field is present. If it is there, congratulations you could label yourself as an early adopter.
