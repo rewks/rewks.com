@@ -140,6 +140,17 @@ img {
     margin: 0 auto;
 }
 
+.test {
+    position: fixed;
+    max-width: calc(var(--page-max-width) * 0.66);
+    margin: 0 auto;
+}
+
+pre {
+    max-width: 95%;
+    margin: 0 auto;
+}
+
 .content_container {
     flex-grow: 1;
     width: 100%;
