@@ -1,37 +1,9 @@
 :root {
-    --background: #263238;
-    --alt-background: #222222;
-    --primary: #ffffff;
-    --secondary: #cfd8dc;
-    --tertiary: #b0bec5;
-    --interactive: #e27a00;
-    --interactive-secondary: #0ecff1;
-    --error: #bf0000;
-    --border: rgba(0, 0, 0, .5);
-    --border-highlight: #0ecff140;
-    --mobile-nav: #263238ee;
-
-    --console-user: #00ff00;
-    --console-path: #20bbff;
-
-    --quote-background: #22222277;
-    --quote-border: #0ecff140;
-
-    --card-border: rgba(0, 0, 0, 0.3);
-    --card-background: #222222;
-    --card-primary: #ffffff;
-    --card-secondary: #cfd8dc;
-    --card-tertiary: #b0bec5;
-
-    --first-tag: #aa3030;
-    --second-tag: #006e25;
-    --third-tag: #3079aa;
-    --fourth-tag: #aa30aa;
-    --fifth-tag: #98aa30;
-
     --page-max-width: 1100px;
     --header-height: 80px;
     --footer-height: 60px;
+
+    --border-transparent: #0ecff140;
 }
 
 [data-theme="light"] {
@@ -40,16 +12,42 @@
     --primary: #222222;
     --secondary: #484b6a;
     --tertiary: #9394a5;
-    --interactive: #e27a00;
+    --interactive: #ca6c00;
+    --interactive-hover: #e27a00;
+    --interactive-secondary: #0ecff1;
+    --interactive-secondary-hover: #12b0cc;
     --error: #bf0000;
     --border: rgba(136, 136, 136, 0.5);
+    --border-highlight: var(--border-transparent);
     --mobile-nav: #f2f2f2ee;
 
     --console-user: #b90000;
     --console-path: #004b91;
 
     --quote-background: #e4e5f177;
-    --quote-border: #0ecff140;
+    --quote-border: var(--border-transparent);
+}
+
+[data-theme="dark"] {
+    --background: #263238;
+    --alt-background: #222222;
+    --primary: #ffffff;
+    --secondary: #cfd8dc;
+    --tertiary: #b0bec5;
+    --interactive: #ca6c00;
+    --interactive-hover: #e27a00;
+    --interactive-secondary: #12b0cc;
+    --interactive-secondary-hover: #0ecff1;
+    --error: #bf0000;
+    --border: rgba(0, 0, 0, .5);
+    --border-highlight: var(--border-transparent);
+    --mobile-nav: #263238ee;
+
+    --console-user: #00ff00;
+    --console-path: #20bbff;
+
+    --quote-background: #22222277;
+    --quote-border: var(--border-transparent);
 }
 
 *,

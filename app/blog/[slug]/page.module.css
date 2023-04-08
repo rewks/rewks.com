@@ -12,3 +12,13 @@
     color: var(--tertiary);
     margin-top: -0.5rem;
 }
+
+.post_content a {
+    text-decoration: underline;
+    color: var(--interactive-secondary);
+    font-weight: 500;
+}
+
+.post_content a:hover {
+    color: var(--interactive-secondary-hover);
+}

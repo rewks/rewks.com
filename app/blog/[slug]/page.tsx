@@ -23,7 +23,7 @@ export default async function Page({
                 {meta.date as string}
             </h5>
         </div>
-        <div>
+        <div className={styles.post_content}>
             {content}
         </div>
     </div>

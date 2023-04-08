@@ -52,7 +52,7 @@
 }
 
 .header_item2 a:hover {
-    color: var(--interactive);
+    color: var(--interactive-hover);
 }
 
 .header_item3 button {
