@@ -115,10 +115,10 @@ So the question becomes, how can we force the app to send commands to the Redis 
 
 If that looks ugly and confusing, don't worry - it is actually simple once you understand it. The redis-cli equivalent would be:
 
-<div className="code"><pre><code>
+```plain
 KEYS *
 QUIT 
-</code></pre></div>
+```
 
 However, when sending commands through gopher we need to specify some extra things for each command.
 
@@ -127,16 +127,16 @@ However, when sending commands through gopher we need to specify some extra thin
 
 In addition to the above, everything needs to be on its own line, with carriage returns (\r\n) instead of regular new lines (\n). The simple example above becomes:
 
-<div className="code"><pre><code>
+```plain
 *2          # First command: number of arguments
 $4          # First command: first argument length
 KEYS        # First command: first argument value
 $1          # First command: second argument length
-\*           # First command: second argument value
+\*          # First command: second argument value
 *1          # Second command: number of arguments
 $4          # Second command: first argument length
 QUIT        # Second command: first argument value
-</code></pre></div>
+```
 
 Of course, sending some of these characters (like CRLF) over an HTTP request is no good so we URL encode the special characters, which gives the messy string seen earlier with all the %0D%0A stuff. Sending this simple request as a test to the challenge shows that we can indeed execute redis commands in this way. Note that it may take multiple requests to get a proper response, sometimes we just get a generic error. When it works, we see inside the error text the response to the Redis cmd - "sess:TpBkT-zG-PLzxuH-yzZ3-S5SGVpY23ag" 
 
@@ -214,7 +214,7 @@ return res
 
 For clarity, unencoded this is (lua script snipped for readability): 
 
-<div className="code"><pre><code>
+```plain
 *3
 $4
 EVAL
@@ -225,7 +225,7 @@ $1
 *1
 $4
 QUIT
-</code></pre></div>
+```
 
 The response from the challenge server confirms we have full-blown RCE (remember it may take a few attempts). 
 
