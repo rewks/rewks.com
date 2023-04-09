@@ -28,6 +28,49 @@
 
     --quote-background: #e4e5f177;
     --quote-border: var(--border-transparent);
+
+    --code-color: #394144;
+    --code-file-color: #434c50;
+    --code-lang-css: #f76d47;
+    --code-background: #fafafa;
+    --code-file-background: #e4e5f1;
+    --code-selected: #cceae7;
+    --code-attr-rule: #7c4dff;
+    --code-attr-name: #39adb5;
+    --code-attr-value: #e68600;
+    --code-attribute: #e68600;
+    --code-boolean: #7c4dff;
+    --code-builtin: #39adb5;
+    --code-cdata: #39adb5;
+    --code-char: #39adb5;
+    --code-class: #39adb5;
+    --code-class-name: #6182b8;
+    --code-comment: #aabfc9;
+    --code-constant: #7c4dff;
+    --code-deleted: #e53935;
+    --code-doctype: #aabfc9;
+    --code-entity: #e53935;
+    --code-function: #7c4dff;
+    --code-hexcode: #f76d47;
+    --code-id: #7c4dff;
+    --code-important: #7c4dff;
+    --code-inserted: #39adb5;
+    --code-keyword: #7c4dff;
+    --code-number: #f76d47;
+    --code-operator: #39adb5;
+    --code-prolog: #aabfc9;
+    --code-property: #39adb5;
+    --code-pseudo-class: #e68600;
+    --code-pseudo-element: #e68600;
+    --code-punctuation: #39adb5;
+    --code-regex: #6182b8;
+    --code-selector: #e53935;
+    --code-string: #e68600;
+    --code-symbol: #7c4dff;
+    --code-tag: #e53935;
+    --code-unit: #f76d47;
+    --code-url: #e53935;
+    --code-variable: #e53935;
 }
 
 [data-theme="dark"] {
@@ -52,6 +95,7 @@
     --quote-border: var(--border-transparent);
 
     --code-color: #eee;
+    --code-file-color: #eee;
     --code-lang-css: #fd9170;
     --code-background: #2f2f2f;
     --code-file-background: #262626;
