@@ -9,15 +9,26 @@ draft: false
 
 ## Background
 
-I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool [Terraform](https://www.terraform.io/) and immediately starting thinking how I could incorporate this into my job too.
+I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool [Terraform](https://www.terraform.io/) and immediately starting thinking how I could incorporate this into my security world too.
 
-At the time, we as a team had started getting more frequent requests from clients asking for aid in investigating potential or confirmed breaches on their network. We had moved towards using a tool called [Velociraptor](https://docs.velociraptor.app/) to aid in our investigations, but it would not be used often enough to warrant a permanent deployment with the associated costs. This was, I thought, the perfect opportunity to introduce some automation whereby we could run a Terraform script to spin up an environment as needed rather than manually setting it up each time.
+At the time, I had been getting more involved in incident response cases and researching tooling available to assist with it. I had been dabbling with a tool called [Velociraptor](https://docs.velociraptor.app/) and thought this would be a great small test case. It is something that I wouldn't want running all the time accruing costs but would also like to spin up as lazily as possible if needed. So I set about automating a deployment which I could use on a personal basis anytime I wanted to test something, or could be refined to meet a professional use case should my team start using Velociraptor as part of our workflow.
 
 ## Architecture
 
-Firstly I had to plan where it would sit and what components would be needed. It was an easy choice to look at AWS for hosting, as we already have a tenancy with some testing servers. So after presenting my plan to the boss and being granted approval for the project, I went to the drawing board. What I ended up with was pretty simple, since our use-case did not demand anything more and there is a lot to be said for the KISS principle (Keep It Simple, Stupid!).
+Firstly I had to plan where it would sit and what components would be needed. It was an easy choice to look at AWS for hosting, as I had already used its services on occasion and have a Route53 Hosted Zone for one of my domains there. So with that decided, I went to the drawing board. What I ended up with was pretty simple, since my interests did not demand anything more and there is a lot to be said for the <Keyword text="KISS"/> principle (Keep It Simple, Stupid!).
 
-We have a VPC, inside of which sits a subnet with appropriate access rules. Inside the subnet we have an ec2 instance on which runs the Velociraptor server, and an EFS for encrypted data storage. Finally a subdomain A record is created in our hosted zone on Route53 for the deployed client exectuables to call back to. Now, some of these components incur running costs, and some do not. For the ones that do not incur costs, we leave them set up permanently. A side bonus of this is that it is easier to have multiple Velociraptor instances spun up concurrently without having to worry about conflicting addresses/the person running the script having to remember to specify an unused IP range for a new subnet.
+<div className="img_half_screen">
+    <Image
+        src="/blog-images/automated-velociraptor-deployment/architecture-layout.png"
+        alt="Diagram showing the layout of components in the deployment"
+        width={768}
+        height={512}
+        style={{width: "100%", height: "auto"}}
+        priority
+    />
+</div>
+
+As the top level container I have a VPC, inside of which sits a subnet with appropriate access rules. Inside the subnet I have an ec2 instance on which runs the Velociraptor server, and an EFS for encrypted data storage. Finally a subdomain A record is created in my hosted zone on Route53 for the deployed client exectuables to call back to. An important point to consider is that some of these components incur running costs and some do not. For the ones that do not incur costs, I can leave them set up permanently. A side bonus of this is that it is easier to have multiple Velociraptor instances spun up concurrently without having to worry about conflicting addresses or remembering to specify an unused IP range for a new subnet.
 
 ### Permanent costless components:
 
@@ -26,7 +37,7 @@ We have a VPC, inside of which sits a subnet with appropriate access rules. Insi
 - **Routing Table**: Routing table for the gateway
 - **Subnet**: Subset of the IP range within the VPC, contains the Velociraptor server(s) and file store(s)
 - **Network ACL**: Access control list associated with the subnet. Contains rules which define ingress and egress traffic permitted
-- **Hosted Zone**: A hosted zone within Amazon's Route53 DNS service. This has a small cost but already exists for other business purposes, so no additional cost here
+- **Hosted Zone**: A hosted zone within Amazon's Route53 DNS service. This has a small cost (about £0.60 a month) but already exists for other purposes, so no additional cost is introduced here
 
 ### Terraform managed components:
 
@@ -36,17 +47,17 @@ We have a VPC, inside of which sits a subnet with appropriate access rules. Insi
 - **Security Groups**: Security groups and rules that are associated with the EC2 and EFS which allow more granular rules for each deployment
 - **DNS Record**: A subdomain created for each deployment, pointing to the Velociraptor server public IP
 
-Upon the start of an incident response case, the above terraform managed components are created by a script - and once the investigation has concluded, the script is run once more to delete them.
+When the Terraform script is run the above components are created and their state stored - and once they are no longer needed, the script is run once more to delete them.
 
-*Note: In addition to the above, there are some additional pre-requisites for anyone who will be running the script. The AWS CLI must be installed, and configured with access keys with the following permissions; AmazonEC2FullAccess, AmazonElasticFileSystemFullAccess, AmazonRoute53FullAccess. Further, Terraform and Ansible must also be installed.*
+*Note: In addition to the above, there are some additional pre-requisites for anyone who will be running the script. The AWS CLI must be installed, and configured with access keys with the following permissions; <Keyword text="AmazonEC2FullAccess, AmazonElasticFileSystemFullAccess, AmazonRoute53FullAccess"/>. Further, Terraform and Ansible must also be installed.*
 
 ## Security Concerns
 
-By nature, access to the analyst web interface and client-server listening service happen over the internet. Obviously, sensitive information will be transmitted to and stored on the Velociraptor server. We make use of security group rules (think firewall rules) to limit access appropriately.
+While a personal setup may not contain anything overly sensitive it is still best practice to consider security of such a tool. By nature, access to the analyst web interface and client-server listening service happen over the internet. Obviously, sensitive information could be transmitted to and stored on the Velociraptor server so I make use of security group rules to limit access appropriately.
 
 1. Firstly, the EFS used for storage of client data can only be accessed by the specific EC2 hosting the Velociraptor server. No other sources can touch it. The EFS is also encrypted at rest.
-2. The web interface used by analysts conducting the investigation is restricted and only traffic originating from our own corporate IPs (sepcifically the security team dedicated VPN) are able to reach it.
-3. Thirdly, the service listening for client callbacks is also restricted, with a whitelist consisting of the client's corporate IPs.
+2. The web interface used by me (or other analysts) conducting the investigation is restricted and only traffic originating from my IP (or specific, known company IPs for example)
+3. Thirdly, the service listening for client callbacks is also restricted, with a whitelist consisting of the "client's" IPs.
 
 This ensures no aspects of the deployment are visible to third parties, whether that be scanning bots, security researchers or malicious actors.
 
@@ -55,7 +66,7 @@ This ensures no aspects of the deployment are visible to third parties, whether 
 In order to keep everything organised and segmented, I decided to create a module for each aspect of the script.
 
 **Networking**: This module is responsible for initialisation of data sources pointing to the pre-created VPC and Subnet. These data sources are like handles that the rest of the script will use to add or remove new components.  
-**Routing**: This module simply adds a new A record into our hosted zone in AWS Route 53 that points a new subdomain at the EC2 public IP.  
+**Routing**: This module simply adds a new A record into my hosted zone in AWS Route 53 that points a new subdomain at the EC2 public IP.  
 **App**: The main one. This module handles creation of the EC2, the EFS and all of the appropriate traffic control rules. In addition, it creates a new SSH key for admin access and runs a cloud-init and Ansible script to handle configuration of the server after the first boot.
 
-I wanted to get this blog post finished in one sitting, but my train is nearing my destination so I will have to split it (apologies for the abrupt ending). Thus concludes part 1 of this blog post. With the purpose of the project outlined and the design laid out, part 2 will dive into the actual Terraform and Ansible code that makes the magic happen!
+Thus concludes part 1 of this blog post. With the purpose of the project outlined and the design laid out, part 2 will dive into the actual Terraform and Ansible code that makes the magic happen!

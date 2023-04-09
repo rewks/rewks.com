@@ -3,6 +3,7 @@ import path from 'path'
 import Image from 'next/image'
 import Link from 'next/link'
 import Quote from './quote'
+import Keyword from './keyword'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import rehypePrism from 'rehype-prism-plus'
 import rehypeCodeTitles from 'rehype-code-titles'
@@ -30,6 +31,7 @@ export async function getPostByName(fileName: string) {
             Image,
             Link,
             Quote,
+            Keyword,
         }
     })
 

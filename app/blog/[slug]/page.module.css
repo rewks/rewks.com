@@ -15,11 +15,14 @@
 
 .post_content a {
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration-color: var(--interactive-secondary);
+    text-underline-offset: 2px;
+    text-decoration-thickness: 2px;
     color: var(--interactive-secondary);
     font-weight: 500;
 }
 
 .post_content a:hover {
     color: var(--interactive-secondary-hover);
+    text-decoration-color: var(--interactive-secondary-hover);
 }
