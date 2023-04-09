@@ -11,3 +11,9 @@
 .quote p {
     margin: 0rem;
 }
+
+@media only screen and (max-width: 600px) {
+    .quote {
+        max-width: 80%;
+    }
+}
