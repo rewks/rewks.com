@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import styles from './mobileNav.module.css'
+import styles from './styles/mobileNav.module.css'
 
 export default function MobileNav() {
     const [navShowing, setNavShowing] = useState(false);

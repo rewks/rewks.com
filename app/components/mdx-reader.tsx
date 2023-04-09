@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import Image from 'next/image'
 import Link from 'next/link'
-import Quote from '@/lib/quote'
+import Quote from './quote'
 import { compileMDX } from 'next-mdx-remote/rsc'
 
 const root = path.join(process.cwd(), 'app', 'blog-posts')

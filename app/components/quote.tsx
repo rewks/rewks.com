@@ -1,4 +1,4 @@
-import styles from './quote.module.css'
+import styles from './styles/quote.module.css'
 
 export default function Quote({
     text, 

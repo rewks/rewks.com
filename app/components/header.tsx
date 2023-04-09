@@ -2,7 +2,7 @@ import Link from 'next/link'
 import MobileNav from './mobileNav'
 import Logo from './logo'
 import ThemeSwitch from './themeSwitch'
-import styles from './header.module.css'
+import styles from './styles/header.module.css'
 import { Inter } from 'next/font/google'
 
 const inter = Inter({ subsets: ['latin'] })

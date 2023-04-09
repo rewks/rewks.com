@@ -1,5 +1,5 @@
-import { getAllPostsMeta } from '@/lib/mdx-reader'
-import BlogCard from './blogCard'
+import { getAllPostsMeta } from '@/app/components/mdx-reader'
+import BlogCard from '@/app/components/blogCard'
 import styles from './page.module.css'
 
 export default async function PostList() {

@@ -1,4 +1,4 @@
-import styles from './blogCard.module.css'
+import styles from './styles/blogCard.module.css'
 import Image from 'next/image'
 import Link from 'next/link'
 

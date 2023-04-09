@@ -1,7 +1,7 @@
 import './globals.css'
-import Providers from './providers'
-import Header from './header'
-import Footer from './footer'
+import Providers from './components/providers'
+import Header from './components/header'
+import Footer from './components/footer'
 import { Rubik } from 'next/font/google'
 
 const rubik = Rubik({ weight: ['400', '500', '600', '700'], subsets: ['latin'] })

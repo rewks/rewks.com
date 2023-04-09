@@ -1,4 +1,4 @@
-import { getPostByName } from '@/lib/mdx-reader'
+import { getPostByName } from '@/app/components/mdx-reader'
 import styles from './page.module.css'
 
 const getPostContent = async (slug: string) => {
