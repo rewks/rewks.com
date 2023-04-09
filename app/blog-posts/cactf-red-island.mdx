@@ -49,8 +49,7 @@ As in other challenges, a good first idea is to try and learn more about the app
 
 Copying the response to a text editor and doing a couple Find and Replace edits makes the code perfectly readable.
 
-<div className="code">
-```javascript
+```javascript:index.js
 const express          = require('express');
 const app              = express();
 const session          = require('express-session');
@@ -101,7 +100,6 @@ app.all('*', (req, res) => {
     app.listen(1337, '0.0.0.0', () => console.log('Listening on port 1337'));
 })();
 ```
-</div>
 
 We don't have to look far before we see connect-redis and redis. The name of the challenge suddenly makes a lot more sense and it is pretty clear we are going to need to exploit a Redis service through this SSRF. We can read various other app source files but honestly there isn't anything in them to help from this point on. 
 

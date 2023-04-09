@@ -1,3 +1,5 @@
+@import url("@/app/components/styles/prism-highlighting.css");
+
 :root {
     --page-max-width: 1100px;
     --header-height: 80px;
@@ -48,6 +50,48 @@
 
     --quote-background: #22222277;
     --quote-border: var(--border-transparent);
+
+    --code-color: #eee;
+    --code-lang-css: #fd9170;
+    --code-background: #2f2f2f;
+    --code-file-background: #262626;
+    --code-selected: #646464;
+    --code-attr-rule: #c792ea;
+    --code-attr-name: #ffcb6b;
+    --code-attr-value: #a5e844;
+    --code-attribute: #a5e844;
+    --code-boolean: #c792ea;
+    --code-builtin: #ffcb6b;
+    --code-cdata: #80cbc4;
+    --code-char: #80cbc4;
+    --code-class: #ffcb6b;
+    --code-class-name: #f2ff00;
+    --code-comment: #616161;
+    --code-constant: #c792ea;
+    --code-deleted: #ff6666;
+    --code-doctype: #616161;
+    --code-entity: #ff6666;
+    --code-function: #c792ea;
+    --code-hexcode: #f2ff00;
+    --code-id: #c792ea;
+    --code-important: #c792ea;
+    --code-inserted: #80cbc4;
+    --code-keyword: #c792ea;
+    --code-number: #fd9170;
+    --code-operator: #89ddff;
+    --code-prolog: #616161;
+    --code-property: #80cbc4;
+    --code-pseudo-class: #a5e844;
+    --code-pseudo-element: #a5e844;
+    --code-punctuation: #89ddff;
+    --code-regex: #f2ff00;
+    --code-selector: #ff6666;
+    --code-string: #a5e844;
+    --code-symbol: #c792ea;
+    --code-tag: #ff6666;
+    --code-unit: #fd9170;
+    --code-url: #ff6666;
+    --code-variable: #ff6666;
 }
 
 *,
@@ -148,11 +192,6 @@ img {
 .test {
     position: fixed;
     max-width: calc(var(--page-max-width) * 0.66);
-    margin: 0 auto;
-}
-
-pre {
-    max-width: 95%;
     margin: 0 auto;
 }
 

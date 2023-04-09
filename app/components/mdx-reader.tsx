@@ -4,6 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Quote from './quote'
 import { compileMDX } from 'next-mdx-remote/rsc'
+import rehypePrism from 'rehype-prism-plus'
+import rehypeCodeTitles from 'rehype-code-titles'
+
 
 const root = path.join(process.cwd(), 'app', 'blog-posts')
 
@@ -14,7 +17,15 @@ export async function getPostByName(fileName: string) {
 
     const { frontmatter, content } = await compileMDX({
         source: postContent,
-        options: { parseFrontmatter: true },
+        options: { 
+            parseFrontmatter: true,
+            mdxOptions: {
+                rehypePlugins: [
+                    rehypeCodeTitles,
+                    [rehypePrism, { ignoreMissing: true }],
+                ]
+            }
+        },
         components: {
             Image,
             Link,
