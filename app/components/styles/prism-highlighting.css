@@ -52,13 +52,13 @@ pre[class*="language-"] ::selection {
 	padding: 0.1rem;
 }
 
-/* Stlying for inline code blocks */
+/* Styling for inline code blocks */
 :not(pre) > code {
 	margin: 0 0.25rem;
 	border-radius: 4px;
 	text-align: left;
-	color: var(--code-color);
-	background: var(--code-background);
+	color: var(--code-inline-color);
+	background: var(--code-inline-background);
 	font-family: Roboto Mono, monospace;
 	font-size: 0.9rem;
 

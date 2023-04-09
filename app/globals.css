@@ -29,11 +29,13 @@
     --quote-background: #e4e5f177;
     --quote-border: var(--border-transparent);
 
-    --code-color: #394144;
+    --code-inline-color: #484b6a;
+    --code-inline-background: #e4e5f1;
     --code-file-color: #434c50;
+    --code-file-background: #e4e5f1;
+    --code-color: #394144;
     --code-lang-css: #f76d47;
     --code-background: #fafafa;
-    --code-file-background: #e4e5f1;
     --code-selected: #cceae7;
     --code-attr-rule: #7c4dff;
     --code-attr-name: #39adb5;
@@ -94,11 +96,13 @@
     --quote-background: #22222277;
     --quote-border: var(--border-transparent);
 
-    --code-color: #eee;
+    --code-inline-color: #eeeeee;
+    --code-inline-background: #262626aa;
     --code-file-color: #eee;
+    --code-file-background: #262626;
+    --code-color: #eee;
     --code-lang-css: #fd9170;
     --code-background: #2f2f2f;
-    --code-file-background: #262626;
     --code-selected: #646464;
     --code-attr-rule: #c792ea;
     --code-attr-name: #ffcb6b;

