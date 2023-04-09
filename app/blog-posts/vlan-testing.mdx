@@ -52,7 +52,7 @@ When configuring the connection you get four tabs. Generally only two will be of
 
 Inside /etc/netplan we can find a file named something like **01-network-manager-all.yaml** - names may differ across distros. Interface configurations can be added in here as demonstrated below. This method may be preferable for speed if creating numerous interfaces over the graphical method. Take note of the interface name you use for the parent ethernet interface. We can find the auto-generated interface name for the physical interface by using the command `ip a` after plugging in the ethernet cable. In my case it is something like enx00e04c680a38 (yuck).
 
-```
+```plain:/etc/netplan/01-network-manager-all.yaml
 network:
   ethernets:
     enx00e04c680a38:
