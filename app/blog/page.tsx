@@ -1,12 +1,13 @@
 import { getAllPostsMeta } from '@/app/components/mdx-reader'
 import BlogCard from '@/app/components/blogCard'
+import BlogPagesNav from '@/app/components/blogPagesNav'
 import styles from './page.module.css'
 
-const postsPerPage = 3;
+const postsPerPage = 10;
 
 type Props = {
     searchParams?: {
-        page?: number,
+        page?: string,
     },
 }
 
@@ -16,10 +17,12 @@ export default async function PostList(props: Props) {
         return (a?.meta.date as string) > (b?.meta.date as string) ? -1 : 1;
     })
 
-    let page = props.searchParams?.page? props.searchParams?.page : 1
     const totalPages = Math.ceil(sortedPostList.length / postsPerPage)
+    let page = props.searchParams?.page? props.searchParams?.page : 1
+    
+    page = +page ? +page : 1
+    page = page <= totalPages ? page : 1
 
-    page = page > totalPages ? 1 : page
     const pagePostList = sortedPostList.slice(postsPerPage * (page - 1), postsPerPage * page)
 
     return <>
@@ -31,6 +34,12 @@ export default async function PostList(props: Props) {
                     meta={post.meta}
                 />
             ))}
+        </div>
+        <div className={styles.page_navigation_container}>
+            <BlogPagesNav
+                currentPage={page}
+                totalPages={totalPages}
+            />
         </div>
     </>
 }
