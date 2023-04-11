@@ -9,27 +9,27 @@ draft: false
 
 ## Introduction
 
-**Note**: This post is not a how-to or a study in the best Checkpoints, settings and prompt syntax. It is a commentary on the subject and the potential implications.
+For anyone not living under a rock it is clear that the availability of advanced "AI" models has exploded in just the last year. ChatGPT in particular has garnered a lot of mainstream media attention, with panicked stories about outperforming humans at certain tasks, potential for spreading misinformation, aiding malware authors and bringing the integrity of university student's coursework into question. All eyes are focused on this space and questions are being asked on how it will affect our lives going forward. The subject of this blog however is with a slightly different application of machine learning - the generation of artwork based on user defined prompts.
 
-Like many people I have maintained a mild awareness of the development of "AI" over the years and since I am not living under a rock I've noticed the increasing pace of development especially in the last few years. Of course it also helps that the availability of certain models to the public has thrust the industry into the forefront of many netizens minds. ChatGPT in particular has garnered a lot of mainstream media attention, with panicked stories about outperforming humans at certain tasks, spreading misinformation and bringing the integrity of university student's coursework into question. The subject of this blog however is with a slightly different application of machine learning - the generation of artwork based (mostly) on user defined text prompts.
+<div className="img_three_quarters_screen">
+    <Image
+        src="/blog-images/ai-art-stable-diffusion/japanese-man-bike-tokeo.png"
+        alt="japanese-man-bike-tokeo.png"
+        width={1536}
+        height={1024}
+        style={{width: "100%", height: "auto"}}    
+    />
+</div>
 
-Interspersed throughout the post I will include some of the images that I, or rather the AI, has generated. Admitedly this is partly to show off my creations as I can't help but be a little proud of how well some turn out. Is that weird? I think it is, for I actually had very little to do with them. It took no talent on my part, I just input some text and adjusted a few settings. This does raise an interesting philosophical question - who should the credit for such images be attributed to? Would I be justified in feeling aggrieved should someone take the images, reuse them and claim them as their own? It's a strange new world we're on the edge of.
+Are human artists becoming surplus to requirements? At first glance the images that people post online from using these tools will look incredible. If anyone can just run some words through a program and get this high quality art, what do we need artists for? Surely their jobs have been automated away?
 
-psst... if you _do_ decide to take my images and reuse them that is fine but if the context permits it then yeah, crediting me would be appreciated!
+<Keyword text="In my opinion the answer is no. Not yet. Perhaps not ever"/>.
 
-<Image
-    src="/blog-images/ai-art-stable-diffusion/japanese-man-bike-tokeo.png"
-    alt="japanese-man-bike-tokeo.png"
-    width={1536}
-    height={1024}
-    style={{width: "100%", height: "auto"}}    
-/>
+Interspersed throughout the post I will include some of the images that I, or rather the AI, has generated. Admitedly this is partly to show off, as even though my involvement in their creation is limited I still get that urge to say "hey, look what I made!" Is that weird? I think it is, for it took no talent on my part, I just input some text and adjusted a few settings until a nice image came out. This does raise an interesting philosophical question - who should the credit for such images be attributed to? Would I be justified in feeling aggrieved should someone take the images, reuse them and claim them as their own? It's a strange new world we're on the edge of.
 
 ## Stable Diffusion
 
-There is a saying _"When it rains, it pours"_ which applies to many things in life, and AI art generators are no different. As soon as they started being made available for public use, more and more started appearing. Often they seem to be an entrepreneurial endeavour, with limited free access and a subscriber model to remove rate-limiting or increase output resolution. Usually they are in someway linked to blockchain technology which I suppose is no surprise, it makes sense that many people trying to take advantage of emerging technologies would also be crypo enthusiasts.
-
-Some of these services were quite impressive in their outputs whilst others were less so, but either way I was left unsatisfied with the low image resolution and limited availability so I looked for how I could actually do this stuff on my own PC. It did not actually take long to come across Stable Diffusion and Midjourney. I expect the pros and cons of each could be debated endlessly but I will asbtain from such discussions as I have so far only tried Stable Diffusion.
+There is a saying _"When it rains, it pours"_ which applies to many things in life, and AI art generators are no different. As soon as they started being made available for public use, more and more started appearing. Often they seem to be an entrepreneurial endeavour, with limited free access and a subscriber model to remove rate-limiting or increase output resolution. There is no way I was handing money over to someone who has probably just put third party paywall infront of the actual source of the art so I went looking. It did not actually take long to come across Stable Diffusion and Midjourney. I can't comment on Midjourney as so far I have only tried Stable Diffusion, but after the initial setup and seeing what I was able to produce, I was blown away.
 
 <div className="img_two_thirds_screen">
     <Image
@@ -41,11 +41,13 @@ Some of these services were quite impressive in their outputs whilst others were
     />
 </div>
 
-At first glance the images that people post online will look incredible. If anyone can just run some words through a program and get this high quality art, what do we need artists for? Surely their jobs have been automated away right? In my opinion, no. Not yet. Maybe not ever.
+So if such high quality images are able to be generated in seconds, how can I argue that artists are not in danger?
 
 ### Training data limitations
 
-What I think is important to understand is that everything that is output is based on a finite set of training data. When you want to generate some images you need to choose a checkpoint file to use. In the simplest terms a checkpoint file is simply an end result of a set of training data, and the creators probably had a particular style in mind when collating it all. Maybe it focuses on animals, photorealistic humans, RPG style art, anime, cyberpunk and so on. The larger the training data set, the more varied the outputs may be but it will likely always lack variety in some form. This tends to become evident when you generate a sufficient amount of images - you start to notice how even though many of the results look fantastic, there are definite similarities between them. For example, you may create countless pictures of a young white brunette woman in various contexts and notice that she has a pretty similar generic facial structure in all of them. In real life every person is noticeably different; different nose shapes and sizes, different eye shapes, cheek bones, jaw lines and so on. Due to the limitations of training data, there will be less variety of these things in the outputs.
+What I think is important to understand is that everything that is output is based on a finite set of training data. When you want to generate some images you need to choose a checkpoint file to use. In the simplest terms a checkpoint file is simply an end result of a set of training data, and the creators probably had a particular style in mind when collating it all. Maybe it focuses on animals, photorealistic humans, RPG style art, anime, cyberpunk and so on. The larger the training data set, the more varied the outputs may be but a good checkpoint file has to strike a balance. Too much variation and you risk more chaotic and malformed images. Therefore if you generate enough images using the same prompts and checkpoint you will notice striking similarities despite each output using a randomised seed.
+
+An obvious example is facial features. If I ask you to picture a completely imaginary 25 year old white woman, her face would probably be distinctly different from what anyone else had imagined if asked to do the same. There are infinite variations that could be made. In a training data set however, this is not the case. The AI is limited in a way a human artist would not be - it does not have an imagination, just a set of reference material. Generate a bunch of images of a 25 year old white woman and you'll probably notice similar noses, jaw line, eye shape or any other feature across many of them. This can be countered with carefully crafted prompts to an extent, but not completely.
 
 <div className="img_two_thirds_screen">
     <Image
@@ -59,7 +61,7 @@ What I think is important to understand is that everything that is output is bas
 
 ### Understanding of the user's desires
 
-AI does what I consider to be a seriously impressive job of taking in text prompts and making images that more or less conform to them. However, they will never(?) be truly accurate or as flexible as a human can be. You can feed in the most descriptive prompt in the world but not everything you describe will be in the end result. You can assign weightings to keywords to improve likelihood of them influencing the output but again, in the end you're at the mercy of randomness. I think this is part of the excitement, the AI interpretation of your prompt may even result in an amazing image that you hadn't actually thought of. Still, if you have an image in your mind that you want recreated as accurately as possible your best bet is to work with a human artist who can consult you throughout the development of the artwork and make changes based on your direction.
+AI does what I consider to be a seriously impressive job of taking in text prompts and making images that more or less conform to them. However, they will not be truly accurate or as flexible as a human can be. You can feed in the most descriptive prompt in the world but not everything you describe will be in the end result. You can assign weightings to keywords to improve likelihood of them influencing the output, use ControlNets, inpainting etc.. but in the end you're still at the mercy of randomness. I think this is part of the excitement, the AI interpretation of your prompt may even result in an amazing image that you hadn't actually thought of. Though if you have an image in your mind that you want recreated as accurately as possible your best bet is to work with a human who can take feedback throughout the development of the artwork and make changes based on your direction.
 
 <div className="img_three_quarters_screen">
     <Image
@@ -87,10 +89,10 @@ It is not hard to find examples of glaring flaws in images, even if they are per
 
 ## Thoughts on the future
 
-So will AI replace artists? I don't think so. At least not for quite a while yet. The main reasons why are:
+So will AI replace artists? I don't think so. At least not completely. The main reasons why are:
 
 1. Training data limitations result in limited output (e.g. common facial structures on people across images)
 2. Output is random, not an actual replication of what you are imagining so it may come close but will never be exact.
 3. There are always flaws. An extra finger here, a disfigured eye there. A missing earring. Broken backgrounds.
 
-AI art is only going to get better. In fact the improvements that have been made in just the last six months or year alone are phenomenal. I still don't believe it will reach a point where artists are made redundant though. It is still just machine learning after all, not true AI.
+AI art is only going to get better. In fact the improvements that have been made in just the last six months or year alone are phenomenal. I still don't believe it will reach a point where artists are made redundant though. It is more likely that digital artists will adapt their workflow to include AI in some form, just like we are seeing in other industries where things like ChatGPT are being used as another tool to help a professional do specific tasks more efficiently.
