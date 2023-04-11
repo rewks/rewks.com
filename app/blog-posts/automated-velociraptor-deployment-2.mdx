@@ -4,7 +4,7 @@ date: '2023-04-11'
 tags: ['VELOCIRAPTOR', 'INCIDENT RESPONSE', 'AUTOMATION', 'TERRAFORM', 'AWS']
 description: 'Following on from part 1, I look at the actual code required'
 image: '/blog-images/automated-velociraptor-deployment/cover-img.png'
-draft: false
+draft: true
 ---
 
 Ok, so this post is waaay overdue. It was meant to be a quick followup to [part one which was posted months ago](/blog/automated-velociraptor-deployment). Sometimes life just gets in the way, but it is here now!
@@ -21,15 +21,15 @@ I briefly covered pre-reqs in the last post but let's just list what you should 
 
 ### IAM Account
 
-Terraform will need to use an account to manage resources in AWS so in your AWS console go to IAM dashboard and select <Keyword text="User groups"/> from the left-hand menu. Create a new group and name it however you like, I went with "dfir-users". Scroll down to the permissions policies section and check the following:
+Terraform will need to use an account to manage resources so in your AWS console go to IAM dashboard and select <Keyword text="User groups"/> from the left-hand menu. Create a new group and name it however you like, I went with "dfir-users". Scroll down to the <Keyword text="permissions policies"/> section and grant the following:
 
 - AmazonEC2FullAccess
 - AmazonElasticFileSystemFullAccess
 - AmazonRoute53DomainsFullAccess
 
-With the group and permissions set, from the left-hand menu go into <Keyword text="User"/> and then click the Add users button. Again choose whatever name you wish, I went with "dfir-terraform". Click Next and then select the group you just created. Continue through to the review screen and click Create user.
+With the group and permissions set, from the left-hand menu go into <Keyword text="User"/> and then click the add users button. Again choose whatever name you wish, I went with "dfir-terraform". Click next and then select the group you just created. Continue through to the review screen and click create user.
 
-Now go back into the user you just created and go to the <Keyword text="Security Credentials"/> tab. Scroll down to Access keys and click the Create access key button. Choose "Command Line Interface" and continue.
+Now go back into the user you just created and go to the <Keyword text="Security Credentials"/> tab. Scroll down to <Keyword text="Access keys"/> and click the create access key button. Choose "Command Line Interface" and continue.
 
 <div className="img_three_quarters_screen">
     <Image 
@@ -57,7 +57,7 @@ As noted in the part 1 blog post, there are some components of the deployment th
 
 #### Virtual Private Cloud (and others)
 
-Go to the VPC dashboard and click on <Keyword text="Create VPC"/>. In the menu select the <Keyword text="VPC and more"/> option and go through the inputs, choose whatever tag and CIDR blocks you wish, just make sure you select 1 public subnet otherwise an Internet Gateway won't be set up.
+Go to the VPC dashboard and click on Create VPC. In the menu select the <Keyword text="VPC and more"/> option and go through the inputs, choose whatever tag and CIDR blocks you wish, just make sure you select 1 public subnet otherwise an Internet Gateway won't be set up.
 
 <div className="img_three_quarters_screen">
     <span>
