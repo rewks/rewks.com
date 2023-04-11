@@ -53,7 +53,7 @@ Go through the prompts entering the relevant information and you're done!
 
 As noted in the part 1 blog post, there are some components of the deployment that are costless and make sense to be left standing. So let's see how to manually create them in the AWS console. 
 
-**In all of these, make sure you're setting them up in the right region!**
+**In all of these, make sure you're setting them up in the same region!**
 
 #### Virtual Private Cloud (and others)
 
@@ -89,3 +89,166 @@ In the Route 53 dashboard, go to <Keyword text="Hosted zones"/> on the left-hand
 ## Terraform
 
 I originally combined both the Terraform and Ansible scripts, by having Terraform's remote-exec provisioner run the Ansible script on the server after all the infrastructure had finished being stood up but I've now leaned more toward keeping them separate. The user will first run the Terraform script to create all the infrastructure, and then run the Ansible script to configure the server. It is an extra action required on behalf of the user which may be heresy in the automation world but it feels more comfortable to me to have each stage separated... and it's my script so there. You can easily change this back to how I originally had it with a bit of documentation reading anyway.
+
+Before getting started on the bulk of the code, create some top level files which we'll be adding bits into as we go along.
+
+```bash
+touch main.tf
+touch outputs.tf
+touch variables.tf
+touch terraform.tfvars
+```
+
+You can probably guess the purpose of the first two files. For the latter two; <Keyword text="variables.tf"/> contains a list of all the variables that will be fed into the script, their type and default values. <Keyword text="terraform.tfvars"/> contains a subset of those variables, basically any variables that the user wants to set themselves and overwrite the default values. Think along the lines of a username or subdomain name.
+
+⚠️**Note**:⚠️ I recommend adding terraform.tfvars to the .gitignore file if you're going to be creating a public repo for this, just in case you put any sensitive info in there and push it!
+
+Now the first thing to do is to declare in main.tf that we will be using the official AWS provider and initialise it with your chosen region.
+
+```hcl:main.tf
+terraform {
+    required_providers {
+        aws = {
+            source = "hashicorp/aws"
+            version = "~> 4.0"
+        }
+    }
+}
+
+provider "aws" {
+    region = var.aws_region
+}
+```
+
+Notice that we've used a variable when setting the region in the provider setup. We will need to declare this variable in variables.tf.
+
+```hcl:variables.tf
+variable "aws_region" {
+    description = "The region within AWS that resources are to be deployed to"
+    type = string
+    default = "eu-west-2"
+}
+```
+
+We'll be splitting the bulk of the script code into modules to keep things neat, so before continuing just create the directory structure and empty files.
+
+```bash
+mkdir -p modules/app
+mkdir modules/networking
+mkdir modules/routing
+for i in $(ls -1 modules); do touch modules/$i/main.tf; touch modules/$i/outputs.tf; touch modules/$i/variables.tf; done
+```
+
+### Networking 
+
+Ok, let's begin! This is the baby module. Since we are leaving the VPC, subnet etc up permanently we don't have to create them which we would ordinarily do in this module. Instead we're just going to grab a handle to those components so we can add stuff to them.
+
+1. The AWS provider can grab handles for these components using their name tags, so we will be passing those in through variables. Declare variables for the VPC and Subnet name tags in both the main variables file and the networking module variables file.
+
+```hcl:variables.tf
+variable "vpc_name_tag" {
+    description = "The name tag of the VPC"
+    type = string
+    default = "dfir-vpc"
+}
+
+variable "subnet_name_tag" {
+    description = "The name tag of the Subnet"
+    type = string
+    default = "dfir-subnet-public1-eu-west-2a"
+}
+```
+
+```hcl:modules/networking/variables.tf
+variable "vpc_name_tag" {
+    description = "The name tag of the VPC"
+    type = string
+}
+
+variable "subnet_name_tag" {
+    description = "The name tag of the Subnet"
+    type = string
+}
+```
+
+Notice that only the main variables.tf has a value for these. There is no need to set a default value in the networking module file since they will be passed in. If you're not sure where these values came from, you should have seen them when you set the components up earlier. You can also go to the VPC dashboard and see them there too.
+
+2. In main.tf (the top-level one) instruct it to run the networking module and pass in the variables we just created.
+
+```hcl:main.tf
+module "networking" {
+    source = "./modules/networking"
+    vpc_name_tag = var.vpc_name_tag
+    subnet_name_tag = var.subnet_name_tag
+}
+```
+
+3. In /modules/networking/main.tf create two data sources which will point to the VPC and Subnet.
+
+```hcl:/modules/networking/main.tf
+data "aws_vpc" "dfir-vpc" {
+    tags = {
+        Name = "${var.vpc_name_tag}"
+    }
+}
+
+data "aws_subnet" "dfir-subnet" {
+    tags = {
+        Name = "${var.subnet_name_tag}"
+    }
+}
+```
+
+A quick note about syntax here: "data" declares a data source, the string after it is the type of data source (consult the AWS provider documentation to see a full list), and the third bit is the name we give to the data source which allows us to reference it within the rest of the script.
+
+4. Finally, declare some outputs in modules/networking/outputs.tf. These will basically create extra variables that we can pass in to other parts of the script.
+
+```hcl:/modules/networking/outputs.tf
+output "dfir_vpc_id" {
+    value = data.aws_vpc.dfir-vpc.id
+}
+
+output "dfir_subnet_id" {
+    value = data.aws_subnet.dfir-subnet.id
+}
+```
+
+Great, this module is finished! We've retrieved handles to the VPC and Subnet and are ready to use them when creating new resources.
+
+### App
+
+The big one. In this module we will handle creating the EFS (Elastic File Storage) that will be used to store all the Velociraptor data, the EC2 which is the server that Velociraptor will be running on and appropriate network security group rules which will limit which IPs can connect to the EC2.
+
+1. Firstly we need to decide on the size of EC2 we want to provision. There are **loads** to choose from for all kinds of architecture and use-case. Have a look through [the instance types documentation](https://aws.amazon.com/ec2/instance-types/) if you're interested and want to pick your own. If not, I've found that <Keyword text="t3a.large"/> works well. You could get away with a less powerful one too but I've noticed bits of lag on smaller ones and since I never leave it up long anyway the difference in cost doesn't add up to much. Once the decision is made go ahead and put it in a variable.
+
+```hcl:variables.tf
+variable "ec2_size" {
+    description = "The size of the EC2 instance to provision"
+    type = string
+    default = "t3a.large"   # 2 core, 8gb ram, AMD EPYC 7000 series
+}
+```
+
+```hcl:/modules/app/variables.tf
+variable "ec2_size" {
+    description = "The size of the EC2 instance to provision"
+    type = string
+}
+```
+
+2. Secondly, decide the AMI you will be using. The AMI is the machine image of the server, basically the Operating System. [The official help docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html) can guide you through this. Or you can copy me; I am using Ubuntu 22.04 LTS amd64. Two things to note if picking your own: make sure the architecture matches up with your chosen EC2 instance, and that the AMI is in the right region for you. Now... you guessed it - it's variable making time.
+
+```hcl:variables.tf
+variable "ec2_ami" {
+    description = "The AMI to install on the EC2"
+    type = string
+    default = "ami-09744628bed84e434"   # Ubuntu 22.04 LTS amd64 (eu-west-2), 20230325
+}
+```
+
+```hcl:/modules/app/variables.tf
+variable "ec2_ami" {
+    description = "The AMI to install on the EC2"
+    type = string
+}
+```
