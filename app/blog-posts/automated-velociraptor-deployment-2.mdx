@@ -285,8 +285,7 @@ module "app" {
 
 ```hcl:/modules/app/main.tf
 resource "tls_private_key" "dfir-priv-key" {
-    algorithm = "ECDSA"
-    ecdsa_curve = "P521"
+    algorithm = "ED25519"
 }
 
 resource "aws_key_pair" "dfir-pub-key" {
@@ -439,5 +438,36 @@ resource "aws_instance" "dfir-ec2" {
     vpc_security_group_ids = [aws_security_group.dfir-ec2-secgrp.id]
     key_name = aws_key_pair.dfir-pub-key.key_name
     associate_public_ip_address = true
+}
+```
+
+10. Ok so that is the infrastructure set up, but we'll want to think about users and configure access. We don't really want to do everything as root, so we can use a cloud-init script to add a user to the system after first boot and add the public key from the previously created key pair to it for SSH access. First create a new file with the following contents.
+
+```yaml:/modules/app/users.yaml
+# cloud-config
+# Add user to the system and populate authorized_keys
+users:
+  - name: velociraptor
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${dfir-pub-key}
+```
+
+11. Now we can go back to the EC2 resource and use the `templatefile` function to pass this script in to the `user_data` property. Add the following line to your ec2 creation block.
+
+```hcl:/modules/app/main.tf
+    user_data = templatefile("./users.yaml", { dfir-pub-key = tls_private_key.dfir-priv-key.public_key_openssh})
+```
+
+??. Finally we need to define some outputs which will be used to configure a DNS record and help ansible mount the EFS to the EC2 
+
+```hcl:/modules/app/outputs.tf
+output "ec2_public_ip" {
+    value = aws_instance.dfir-ec2.public_ip
+}
+
+output "efs_dns_name" {
+    value = aws_efs_file_system.dfir-efs.dns_name
 }
 ```
