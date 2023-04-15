@@ -4,7 +4,7 @@ date: '2023-04-11'
 tags: ['VELOCIRAPTOR', 'INCIDENT RESPONSE', 'AUTOMATION', 'TERRAFORM', 'AWS']
 description: 'Following on from part 1, I look at the actual code required'
 image: '/blog-images/automated-velociraptor-deployment/cover-img.png'
-draft: true
+draft: false
 ---
 
 Ok, so this post is waaay overdue. It was meant to be a quick followup to [part one which was posted months ago](/blog/automated-velociraptor-deployment). Sometimes life just gets in the way, but it is here now!
@@ -250,5 +250,194 @@ variable "ec2_ami" {
 variable "ec2_ami" {
     description = "The AMI to install on the EC2"
     type = string
+}
+```
+
+3. We're also going to be passing in the VPC and Subnet data sources we grabbed from the Networking module, so we need to declare variables for these.
+
+```hcl:/modules/app/variables.tf
+variable "dfir_vpc_id" {
+    description = "The id of the VPC to attach resources to"
+    type = string
+}
+
+variable "dfir_subnet_id" {
+    description = "The id of the Subnet to place resources in"
+    type = string
+}
+```
+
+4. Now, just as we did with the Networking module we need to tell the top-level main.tf to call the App module and pass in the values for these variables.
+
+```hcl:main.tf
+module "app" {
+    source = "./modules/app"
+    ec2_size = var.ec2_size
+    ec2_ami = var.ec2_ami
+    dfir_vpc_id = module.networking.dfir_vpc_id
+    dfir_subnet_id = module.networking.dfir_subnet_id
+}
+```
+
+5. The first thing we'll do here is not create the EC2, but instead generate a new SSH key-pair. This will allow access to the server through SSH. I have the key output into a .ssh directory inside the project folder (and .gitignore has an entry to ignore this dir just in case), but you can change it to put the key wherever you like.
+
+<Keyword text="Security concerns:"/> you may not like the idea of generating a private key in this way. This is understandable, especially if you're doing this in a professional environment. Feel free to generate a key manually and use that instead. This will require some modification to the script but I'm sure you can read the docs and figure it out.
+
+```hcl:/modules/app/main.tf
+resource "tls_private_key" "dfir-priv-key" {
+    algorithm = "ECDSA"
+    ecdsa_curve = "P521"
+}
+
+resource "aws_key_pair" "dfir-pub-key" {
+    key_name_prefix = "dfir-"
+    public_key = tls_private_key.dfir-priv-key.public_key_openssh
+}
+
+resource "local_file" "priv-key-out" {
+    filename = "./.ssh/dfir.pem"
+    file_permission = "0600"
+    content = tls_private_key.dfir-priv-key.private_key_openssh
+}
+```
+
+6. Let's deal with more security stuff. We do not want our server to be open to the whole internet, so we'll use some security group rules to allow administrative access only from approved IPs. We'll also restrict the callback listener port to approved IPs - these will be the public IPs of the systems we'll install clients on i.e. the targets of investigation.
+
+6.1 Declare variables to hold the approved IPs (take care to set your own IPs here, not the placeholder values). You can specify multiple ranges in a comma-separated list.
+
+```hcl:variables.tf
+variable "admin_ips" {
+    description = "IP ranges for administrative access"
+    type = list(string)
+}
+
+variable "client_ips" {
+    description = "IP ranges client connections will originate from"
+    type = list(string)
+}
+```
+
+```hcl:/modules/app/variables.tf
+variable "admin_ips" {
+    description = "IP ranges for administrative access"
+    type = list(string)
+}
+
+variable "client_ips" {
+    description = "IP ranges client connections will originate from"
+    type = list(string)
+}
+```
+
+```hcl:terraform.tfvars
+client_ips = ["0.0.0.0/0"]
+admin_ips = ["127.0.0.1/32"]
+```
+
+6.2 Pass the variables into the app module and create the security group and rules
+
+```hcl:main.tf
+    # add these lines to the app module block
+    admin_ips = var.admin_ips
+    client_ips = var.client_ips
+```
+
+```hcl:/modules/app/main.tf
+resource "aws_security_group" "dfir-ec2-secgrp" {
+    vpc_id = var.dfir_vpc_id
+    tags = {
+        Name = "dfir-EC2-SG"
+    }
+
+    egress {
+        description = "Allow all outbound traffic from EC2"
+        protocol = "-1"
+        from_port = 0
+        to_port = 0
+        cidr_blocks = ["0.0.0.0/0"]
+        ipv6_cidr_blocks = ["::/0"]
+    }
+
+    ingress {
+        description = "Allow inbound SSH from admin IPs"
+        protocol = "tcp"
+        from_port = 22
+        to_port = 22
+        cidr_blocks = var.admin_ips
+    }
+
+    ingress {
+        description = "Allow inbound Velociraptor GUI access from admin IPs"
+        protocol = "tcp"
+        from_port = 8080
+        to_port = 8080
+        cidr_blocks = var.admin_ips
+    }
+
+    ingress {
+        description = "Allow inbound Velociraptor client connections from client IPs"
+        protocol = "tcp"
+        from_port = 8081
+        to_port = 8081
+        cidr_blocks = var.client_ips
+    }
+}
+```
+
+Feel free to modify the ruleset to fit your purposes.
+
+7. Create a second security group for the EFS that will prevent anything other than the EC2 from touching it.
+
+```hcl:/modules/app/main.tf
+resource "aws_security_group" "dfir-efs-secgrp" {
+    vpc_id = var.dfir_vpc_id
+    tags = {
+        Name = "dfir-EFS-SG"
+    }
+
+    ingress {
+        description = "Allow inbound NFS traffic from members of the EC2 security group"
+        protocol = "tcp"
+        from_port = 2049
+        to_port = 2049
+        security_groups = [aws_security_group.dfir-ec2-secgrp.id]
+    }
+}
+```
+
+8. The last step before creating the actual EC2; we now need to create the EFS that will be holding all the velociraptor data. This is pretty straightforward, we create an EFS resource and then a mount target associated with it which we later use to mount the EFS on the EC2.
+
+```hcl:/modules/app/main.tf
+resource "aws_efs_file_system" "dfir-efs" {
+    encrypted = true
+    tags = {
+        Name = "dfir-EFS"
+    }
+}
+
+resource "aws_efs_mount_target" "dfir-efs-mount" {
+    file_system_id = aws_efs_file_system.dfir-efs.id
+    subnet_id = var.dfir_subnet_id
+    security_groups = [aws_security_group.dfir-efs-secgrp.id]
+}
+```
+
+9. Now we can bring it all together by creating the EC2 resource! Note that at the top of this code block we use the `depends_on` property to inform Terraform that it should wait until the EFS mount point is ready before attempting to create the EC2. Usually Terraform can figure out the order in which things need to be created, but for tasks where resources can be created but there is a delay until they're fully ready, it sometimes needs some help.
+
+```hcl:/modules/app/main.tf
+resource "aws_instance" "dfir-ec2" {
+    depends_on = [
+        aws_efs_mount_target.dfir-efs-mount
+    ]
+    tags = {
+        Name = "dfir-EC2"
+    }
+
+    ami = var.ec2_ami
+    instance_type = var.ec2_size
+    subnet_id = var.dfir_subnet_id
+    vpc_security_group_ids = [aws_security_group.dfir-ec2-secgrp.id]
+    key_name = aws_key_pair.dfir-pub-key.key_name
+    associate_public_ip_address = true
 }
 ```
