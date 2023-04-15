@@ -50,7 +50,7 @@ When configuring the connection you get four tabs. Generally only two will be of
 
 ## Method #2: Netplan
 
-Inside /etc/netplan we can find a file named something like **01-network-manager-all.yaml** - names may differ across distros. Interface configurations can be added in here as demonstrated below. This method may be preferable for speed if creating numerous interfaces over the graphical method. Take note of the interface name you use for the parent ethernet interface. We can find the auto-generated interface name for the physical interface by using the command `ip a` after plugging in the ethernet cable. In my case it is something like enx00e04c680a38 (yuck).
+Inside /etc/netplan we can find a file named something like **01-network-manager-all.yaml** - names may differ across distros. Interface configurations can be added in here as demonstrated below. This method may be preferable for speed if creating numerous interfaces over the graphical method. Take note of the interface name you use for the parent ethernet interface. We can find the auto-generated interface name for the physical interface by using the command `ip a`. In my case it is something like enx00e04c680a38 (yuck).
 
 ```plain:/etc/netplan/01-network-manager-all.yaml
 network:
@@ -70,7 +70,7 @@ network:
       addresses: [192.168.50.100/24]
 ```
 
-**Note**: Setting an IP/route on the parent (physical) interface isn't a necessity. If you are also sending traffic to networks that don't require VLAN tags then you can configure the appropriate address here. Otherwise, there is no need.
+**Note**: Setting an IP/route on the parent (physical) interface isn't a necessity.
 
 Once all the vlan interfaces are configured, load them with `sudo netplan apply`. To remove them at the end of testing simply delete them from the same file and use netplan apply again.
 
@@ -137,9 +137,8 @@ exit
 
 We can now plug a laptop or PC into the switch using an ethernet cable, manually set the IPv4 configuration for the connection and after a short delay SSH into the switch as desired. **Note**: On my super old switches the supported SSH keys/ciphers etc are not quite up to modern defaults so specifying compatible options is necessary when connecting:
 
-<div className='code'><pre><code>
-ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o HostKeyAlgorithms=+ssh-rsa -c aes128-cbc rewks@10.0.1.1
-</code></pre></div>
+`ssh -o KexAlgorithms=+diffie-hellman-group1-sha1 -o HostKeyAlgorithms=+ssh-rsa -c aes128-cbc rewks@10.0.1.1`
+
 
 4. Create a VLAN and place an interface in it on the switch 
 
