@@ -382,16 +382,16 @@ resource "aws_security_group" "dfir-ec2-secgrp" {
     ingress {
         description = "Allow inbound Velociraptor GUI access from admin IPs"
         protocol = "tcp"
-        from_port = 8080
-        to_port = 8080
+        from_port = 9500
+        to_port = 9500
         cidr_blocks = var.admin_ips
     }
 
     ingress {
         description = "Allow inbound Velociraptor client connections from client IPs"
         protocol = "tcp"
-        from_port = 8081
-        to_port = 8081
+        from_port = 9501
+        to_port = 9501
         cidr_blocks = var.client_ips
     }
 }
@@ -559,7 +559,21 @@ resource "aws_route53_record" "dfir-dns" {
 
 ### Outputs and Execution
 
-All of our Terraform code is now complete! Well, except for outputting some useful information. Make one final edit, this time to the top-level outputs.tf
+All of our Terraform code is now complete! Well, except for outputting some useful information both to the user and for Ansible (the next stage). Make two final edits, this time to the top-level main.tf and outputs.tf
+
+```hcl:main.tf
+resource "local_file" "ansible-vars" {
+    filename = "./ansible/vars/from_terraform.yaml"
+    file_permission = "0664"
+    content = "domain: ${local.dfir_subdomain}\nefs_dns_name: ${module.app.efs_dns_name}"
+}
+
+resource "local_file" "ansible-inventory" {
+    filename = "./ansible/hosts"
+    file_permission = "0664"
+    content = "${local.dfir_subdomain}"
+}
+```
 
 ```hcl:outputs.tf
 output "Velociraptor_Public_IP" {
@@ -569,18 +583,25 @@ output "Velociraptor_Public_IP" {
 output "Velociraptor_Server_Domain" {
     value = local.dfir_subdomain
 }
-
-output "EFS_Private_DNS_Name" {
-    value = module.app.efs_dns_name
-}
 ```
 
-Now go ahead and run the script! It takes about 80-90 seconds to complete, although about 70 seconds of that is just the EFS mount! It's like magic.
+Now go ahead and run the script! It takes about 80-90 seconds to complete, although most of that is waiting for the EFS mount target to be ready! It's like magic.
 
 ```bash
 terraform init
 terraform apply
 ```
+
+<div className="img_three_quarters_screen">
+    <Image 
+        src='/blog-images/automated-velociraptor-deployment-2/terraform-output.png'
+        alt='Partial output of Terraform script, showing successful deployment in under 90 seconds'
+        width={0}
+        height={0}
+        sizes="100vw"
+        style={{width: "100%", height: "auto"}}
+    />
+</div>
 
 To decomission all of the resources again, it is just as easy.
 
