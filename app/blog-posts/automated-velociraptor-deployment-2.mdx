@@ -130,6 +130,19 @@ variable "aws_region" {
 }
 ```
 
+In case we ever want multiple deployments on the go at the same time, we'll also set a deployment name variable and use it to tag resources.
+
+```hcl:variables.tf
+variable "deployment_name" {
+    description = "Unique name/id to use for this deployment"
+    type = string
+}
+```
+
+```hcl:terraform.tfvars
+deployment_name = "demo"
+```
+
 We'll be splitting the bulk of the script code into modules to keep things neat, so before continuing just create the directory structure and empty files.
 
 ```bash
@@ -253,7 +266,7 @@ variable "ec2_ami" {
 }
 ```
 
-3. We're also going to be passing in the VPC and Subnet data sources we grabbed from the Networking module, so we need to declare variables for these.
+3. We're also going to be passing in the VPC and Subnet data sources we grabbed from the Networking module, as well as the deployment name so we need to declare variables for these.
 
 ```hcl:/modules/app/variables.tf
 variable "dfir_vpc_id" {
@@ -276,6 +289,7 @@ module "app" {
     ec2_ami = var.ec2_ami
     dfir_vpc_id = module.networking.dfir_vpc_id
     dfir_subnet_id = module.networking.dfir_subnet_id
+    deployment_name = var.deployment_name
 }
 ```
 
@@ -289,12 +303,12 @@ resource "tls_private_key" "dfir-priv-key" {
 }
 
 resource "aws_key_pair" "dfir-pub-key" {
-    key_name_prefix = "dfir-"
+    key_name = "dfir-${var.deployment_name}-"
     public_key = tls_private_key.dfir-priv-key.public_key_openssh
 }
 
-resource "local_file" "priv-key-out" {
-    filename = "./.ssh/dfir.pem"
+resource "local_sensitive_file" "priv-key-out" {
+    filename = "./.ssh/${var.deployment_name}.pem"
     file_permission = "0600"
     content = tls_private_key.dfir-priv-key.private_key_openssh
 }
@@ -345,7 +359,7 @@ admin_ips = ["127.0.0.1/32"]
 resource "aws_security_group" "dfir-ec2-secgrp" {
     vpc_id = var.dfir_vpc_id
     tags = {
-        Name = "dfir-EC2-SG"
+        Name = "dfir-${var.deployment_name}-EC2-SG"
     }
 
     egress {
@@ -391,7 +405,7 @@ Feel free to modify the ruleset to fit your purposes.
 resource "aws_security_group" "dfir-efs-secgrp" {
     vpc_id = var.dfir_vpc_id
     tags = {
-        Name = "dfir-EFS-SG"
+        Name = "dfir-${var.deployment_name}-EFS-SG"
     }
 
     ingress {
@@ -410,7 +424,7 @@ resource "aws_security_group" "dfir-efs-secgrp" {
 resource "aws_efs_file_system" "dfir-efs" {
     encrypted = true
     tags = {
-        Name = "dfir-EFS"
+        Name = "dfir-${var.deployment_name}-EFS"
     }
 }
 
@@ -429,7 +443,7 @@ resource "aws_instance" "dfir-ec2" {
         aws_efs_mount_target.dfir-efs-mount
     ]
     tags = {
-        Name = "dfir-EC2"
+        Name = "dfir-${var.deployment_name}-EC2"
     }
 
     ami = var.ec2_ami
@@ -471,3 +485,107 @@ output "efs_dns_name" {
     value = aws_efs_file_system.dfir-efs.dns_name
 }
 ```
+
+Thus the App module is complete! We've generated a unique key pair, defined traffic rules, created an encrypted auto-scaling file store and stood up a server that will run Velociraptor.
+
+### Routing
+
+The final module of our Terraform script. It will be quite small for all it does is take the public IP of the EC2 instance and create a DNS record in our hosted zone to point to it.
+
+1. Create yet another variable, passing in the domain of your hosted zone in Route 53.
+
+```hcl:variables.tf
+variable "dfir_domain" {
+    description = "The base domain name to be used for deployment (must have a hosted zone in Route53). A subdomain will be created pointing to the EC2 server"
+    type = string
+}
+```
+
+```hcl:/modules/routing/variables.tf
+variable "dfir_domain" {
+    description = "The base domain name to be used for deployment (must have a hosted zone in Route53). A subdomain will be created pointing to the EC2 server"
+    type = string
+}
+```
+
+```hcl:terraform.tfvars
+dfir_domain = "yourdomain.com"
+```
+
+2. Declare two extra variables in the routing module to receive a subdomain and the EC2 public IP
+
+```hcl:/modules/routing/variables.tf
+variable "dfir_subdomain" {
+    description = "The subdomain to point at the EC2"
+    type = string
+}
+
+variable "ec2_public_ip" {
+    description = "The public IPv4 address of the EC2"
+    type = string
+}
+```
+
+2. In the top-level main.tf, combine the deployment name with domain name to create the subdomain string. Then call the routing module and pass in the necessary variables.
+
+```hcl:main.tf
+locals {
+    dfir_subdomain = "dfir-${var.}"
+}
+
+module "routing" {
+    source = "./modules/routing"
+    dfir_domain = var.dfir_domain
+    dfir_subdomain = local.dfir_subdomain
+    ec2_public_ip = module.app.ec2_public_ip
+}
+```
+
+3. Inside the routing main.tf, gather a data source pointing at the Route53 hosted zone and then create a DNS record associating the subdomain and public IP
+
+```hcl:/modules/routing/main.tf
+data "aws_route53_zone" "dfir-zone" {
+    name = "${var.dfir_domain}"
+}
+
+resource "aws_route53_record" "dfir-dns" {
+    zone_id = data.aws_route53_zone.dfir-zone.zone_id
+    name = "${var.dfir_subdomain}"
+    type = "A"
+    ttl = "300"
+    records = [var.ec2_public_ip]
+}
+```
+
+### Outputs and Execution
+
+All of our Terraform code is now complete! Well, except for outputting some useful information. Make one final edit, this time to the top-level outputs.tf
+
+```hcl:outputs.tf
+output "Velociraptor_Public_IP" {
+    value = module.app.ec2_public_ip
+}
+
+output "Velociraptor_Server_Domain" {
+    value = local.dfir_subdomain
+}
+
+output "EFS_Private_DNS_Name" {
+    value = module.app.efs_dns_name
+}
+```
+
+Now go ahead and run the script! It takes about 80-90 seconds to complete, although about 70 seconds of that is just the EFS mount! It's like magic.
+
+```bash
+terraform init
+terraform apply
+```
+
+To decomission all of the resources again, it is just as easy.
+
+```bash
+terraform destroy
+```
+
+This is the end of part two. I will leave the Ansible script for actually installing Velociraptor for part 3, since this was getting quite long already.
