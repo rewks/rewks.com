@@ -7,6 +7,13 @@ image: '/blog-images/automated-velociraptor-deployment/cover-img.png'
 draft: false
 ---
 
+<div className="centered">
+    <div>
+        ### [Find part 2 of this series here](http://localhost:3000/blog/automated-velociraptor-deployment-2)
+        ### [Find part 3 of this series here](http://localhost:3000/blog/automated-velociraptor-deployment-3)
+    </div>
+</div>
+
 ## Background
 
 I was on Discord one evening, chatting to a university friend of mine who lives in the devops world and he mentioned he was studying for a Terraform exam. Maybe I had been living under a rock but my understanding of terraforming was that it was to do with modifying the atmosphere and ecological state of a planet. After some confusion and googling, I became aware of the Infrastructure as Code software tool [Terraform](https://www.terraform.io/) and immediately starting thinking how I could incorporate this into my security world too.
@@ -67,6 +74,13 @@ In order to keep everything organised and segmented, I decided to create a modul
 
 **Networking**: This module is responsible for initialisation of data sources pointing to the pre-created VPC and Subnet. These data sources are like handles that the rest of the script will use to add or remove new components.  
 **Routing**: This module simply adds a new A record into my hosted zone in AWS Route 53 that points a new subdomain at the EC2 public IP.  
-**App**: The main one. This module handles creation of the EC2, the EFS and all of the appropriate traffic control rules. In addition, it creates a new SSH key for admin access and runs a cloud-init and Ansible script to handle configuration of the server after the first boot.
+**App**: The main one. This module handles creation of the EC2, the EFS and all of the appropriate traffic control rules. In addition, it creates a new SSH key for admin access and runs a cloud-init script to configure initial access. This is then followed up with an Ansible script to handle configuration of the Velociraptor server.
 
-Thus concludes part 1 of this blog post. With the purpose of the project outlined and the design laid out, part 2 will dive into the actual Terraform and Ansible code that makes the magic happen!
+Thus concludes part 1 of this blog post. With the purpose of the project outlined and the design laid out, parts 2 and 3 will dive into the actual Terraform and Ansible code that makes the magic happen!
+
+<div className="centered">
+    <div>
+        ### [Find part 2 of this series here](http://localhost:3000/blog/automated-velociraptor-deployment-2)
+        ### [Find part 3 of this series here](http://localhost:3000/blog/automated-velociraptor-deployment-3)
+    </div>
+</div>
