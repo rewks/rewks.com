@@ -32,7 +32,7 @@ export default function Header() {
                             <MobileNav />
                         </nav>
                     </div>
-                    <div className="items-center justify-center pt-2 relative">
+                    <div className="items-center justify-center pt-2">
                         <ThemeButton />
                     </div>
                 </header>
