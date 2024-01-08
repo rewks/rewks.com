@@ -3,7 +3,7 @@ import SocialIcon from './socialIcons'
 export default function Footer() {
     return <>
         <div className="flex justify-center items-center mt-4 min-h-12">
-            <footer className="pt-4 border border-solid border-0 border-t border-b-stone-400 dark:border-b-dprimary">
+            <footer className="pt-4 border border-solid border-0 border-t border-t-stone-400 dark:border-t-dark-primary">
                 <div className="flex justify-center">
                     <div className="mx-2">
                         <SocialIcon name="email" href="mailto:contact@rewks.com" size="28" />

@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Header() {
     return <>
-        <div className="p-0 sm:p-2 px-2 flex justify-center items-center min-h-20 border border-b-stone-400 dark:border-b-black/50 border-0 border-b border-solid bg-slate-300 dark:bg-dsurface2-100 text-black dark:text-dsurface2-200">
+        <div className="p-0 sm:p-2 px-2 flex justify-center items-center min-h-20 border border-b-stone-400 dark:border-b-black border-0 border-b border-solid bg-slate-300 dark:bg-dark-surfacevariant">
             <header className="flex justify-end w-full xl:w-320">
                     <div>
                         <Link href="/">
@@ -25,9 +25,9 @@ export default function Header() {
                     </div>
                     <div className="flex grow justify-end items-center">
                         <nav>
-                            <div className="hidden sm:block [&>a]:px-2 [&>a]:text-xl [&>a]:font-medium">
-                                <Link href="/" className="dark:hover:text-dsurfacetint">Home</Link>
-                                <Link href="/blog" className="dark:hover:text-dsurfacetint">Blog</Link>
+                            <div className="hidden sm:block [&>a]:px-2 [&>a]:text-xl [&>a]:font-medium ">
+                                <Link href="/" className="dark:hover:text-dark-surfacetint">Home</Link>
+                                <Link href="/blog" className="dark:hover:text-dark-surfacetint">Blog</Link>
                             </div>
                             <MobileNav />
                         </nav>

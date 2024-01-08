@@ -36,7 +36,7 @@ export default function RootLayout({
             <head>
                 <Script src="/js/theme.js" strategy="beforeInteractive"/>
             </head>
-            <body className={[inter.className, "bg-slate-200", "dark:bg-dsurface-100", "text-black", "dark:text-dsurface-200"].join(" ")}>
+            <body className={[inter.className, "bg-slate-200", "dark:bg-dark-surface", "text-black", "dark:text-dark-onsurface"].join(" ")}>
                 <Header />
                 <div className="grow w-full max-w-7xl px-4 self-center">
                     {children}

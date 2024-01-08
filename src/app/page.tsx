@@ -5,7 +5,7 @@ export default function Home() {
     return (
         <>
             <main className="grid gap-y-8 gap-x-4 overflow-visible text-center mt-10vh">
-                <div className="col-start-1 col-end-4 text-5xl text-black dark:text-dprimary-100">
+                <div className="col-start-1 col-end-4 text-5xl text-black dark:text-dark-primary">
                     Cyber Security Professional
                 </div>
                 <div className="col-start-1 col-end-4 text-2xl">

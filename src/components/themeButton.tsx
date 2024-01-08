@@ -1,7 +1,7 @@
 export default function ThemeButton() {
     return <>
             <button type="button" id="themeButtonLight" className="bg-transparent border-0 m-0 sm:ml-5 sm:mr-1 hidden">
-                <svg id="themePicker" className="fill-dsurface-200" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg id="themePicker" className="fill-dark-onsurface hover:fill-dark-surfacetint" width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <g id="sun">
                         <circle id="center" cx="12" cy="12" r="5"/>
                         <g id="flames">
