@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Header() {
     return <>
         <div className="p-0 sm:p-2 px-2 flex justify-center items-center min-h-20 border border-b-stone-400 dark:border-b-black border-0 border-b border-solid bg-slate-300 dark:bg-dark-surfacevariant">
-            <header className="flex justify-end w-full xl:w-320">
+            <header className="flex justify-end w-full max-w-screen-xl">
                     <div>
                         <Link href="/">
                             <div className="flex items-center">
